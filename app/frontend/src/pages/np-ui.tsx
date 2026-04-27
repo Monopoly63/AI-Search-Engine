@@ -72,7 +72,7 @@ export function FlowDiagram({ steps }: { steps: string[] }) {
 export function CodeBlock({ code }: { code: string }) {
   const lines = code.split('\n');
   return (
-    <div className="np-scroll" style={{ maxHeight: 480, overflow: 'auto', background: 'var(--bg-alt)', direction: 'ltr' }}>
+    <div className="np-scroll" style={{ maxHeight: 480, overflow: 'auto', background: 'var(--bg-alt)', direction: 'ltr', textAlign: 'left' }}>
       <pre className="np-mono" style={{ margin: 0, padding: '14px 0', fontSize: 12.5, lineHeight: 1.7 }}>
         {lines.map((line, i) => {
           const tokens: Token[] = tokenizeLine(line);

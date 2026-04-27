@@ -184,6 +184,7 @@ input[type="range"].np-range {
   appearance: none;
   background: transparent;
   height: 18px;
+  direction: ltr;
 }
 input[type="range"].np-range::-webkit-slider-runnable-track {
   height: 2px;
@@ -212,5 +213,27 @@ input[type="range"].np-range::-moz-range-thumb {
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
+/* ============================================================
+   RTL Layout Support
+   ============================================================ */
+
+/* Sidebar border flips automatically with borderInlineEnd */
+
+/* Code block always LTR */
+.np-code-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Graph SVG always LTR */
+.np-graph-ltr {
+  direction: ltr;
+}
+
 /* RTL adjustments */
 html[dir="rtl"] .np-rtl-flip { transform: scaleX(-1); }
+
+/* Ensure range sliders always go left-to-right */
+html[dir="rtl"] input[type="range"].np-range {
+  direction: ltr;
+}

@@ -280,15 +280,14 @@ export default function Index() {
   /* ============================================================ */
 
   return (
-    <div className="np-dot-grid" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
-      <div className="np-shell" style={{ display: 'grid', gridTemplateColumns: isRTL ? '1fr 280px' : '280px 1fr', minHeight: '100vh' }}>
+    <div className="np-dot-grid" dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
+      <div className="np-shell" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', minHeight: '100vh' }}>
         {/* ========== SIDEBAR ========== */}
         <aside className="np-sidebar np-scroll" style={{
           borderInlineEnd: '1px solid var(--border)',
           background: 'var(--bg-panel)',
           padding: '22px 20px',
           position: 'sticky', top: 0, alignSelf: 'start', height: '100vh', overflowY: 'auto',
-          gridColumn: isRTL ? 2 : 1,
         }}>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
@@ -311,6 +310,7 @@ export default function Index() {
                 color: 'var(--accent-fg)', fontWeight: 800, fontSize: 14,
                 boxShadow: 'var(--shadow-glow)',
                 fontFamily: 'Inter, sans-serif',
+                flexShrink: 0,
               }}>{lang === 'ar' ? 'ع.ح' : 'AH'}</div>
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="np-sans" style={{ fontSize: 12, color: 'var(--fg-strong)', fontWeight: 700, letterSpacing: 0.3, lineHeight: 1.2 }}>{displayedAuthor}</div>
@@ -367,10 +367,10 @@ export default function Index() {
                   onClick={() => handleAlgoChange(a.key)}
                   className="np-sans"
                   style={{
-                    textAlign: isRTL ? 'right' : 'left', padding: '10px 12px',
+                    textAlign: 'start', padding: '10px 12px',
                     background: active ? 'var(--accent-soft)' : 'transparent',
                     border: '1px solid ' + (active ? 'var(--border-accent)' : 'var(--border)'),
-                    borderInlineStart: active ? `2.5px solid var(--accent)` : '1px solid var(--border)',
+                    borderInlineStart: active ? '2.5px solid var(--accent)' : '1px solid var(--border)',
                     color: active ? 'var(--fg-strong)' : 'var(--fg-muted)',
                     fontSize: 11.5, letterSpacing: 0.5, fontWeight: active ? 700 : 500,
                     cursor: 'pointer', borderRadius: 3,
@@ -420,7 +420,7 @@ export default function Index() {
         </aside>
 
         {/* ========== MAIN ========== */}
-        <main style={{ padding: '28px 40px 64px', maxWidth: 1160, width: '100%', gridColumn: isRTL ? 1 : 2 }}>
+        <main style={{ padding: '28px 40px 64px', maxWidth: 1160, width: '100%' }}>
           {/* Top strip */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
             <div>
@@ -550,9 +550,10 @@ export default function Index() {
         }}
       />
       <div
+        className={`np-drawer ${drawerOpen ? 'np-drawer-open' : ''}`}
         style={{
           position: 'fixed', top: 0,
-          [isRTL ? 'left' : 'right']: 0 as any,
+          insetInlineEnd: 0,
           bottom: 0, width: 'min(520px, 100vw)',
           background: 'var(--bg-alt)',
           borderInlineStart: '1px solid var(--border)',
@@ -585,6 +586,7 @@ export default function Index() {
                 gridTemplateRows: `repeat(${ROWS}, ${cellSize}px)`,
                 gap: 3, padding: 10,
                 background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 4,
+                direction: 'ltr',
               }}
             >
               {grid.map((row, r) => row.map((cell, c) => {

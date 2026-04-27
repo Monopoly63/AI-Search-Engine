@@ -51,7 +51,7 @@ export function GraphView(props: {
           <span className="np-sans" style={{ fontSize: 10, letterSpacing: 2.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Graph</span>
           <span className="np-mono" style={{ fontSize: 10, letterSpacing: 1, color: 'var(--fg-faint)' }}>{t.graphNodes} {graph.nodes.length} · {t.graphEdges} {graph.edges.length}</span>
         </div>
-        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" style={{ display: 'block', background: 'transparent' }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" style={{ display: 'block', background: 'transparent', direction: 'ltr' }}>
           <defs>
             <filter id="np-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="3" result="b" />
@@ -93,7 +93,7 @@ export function GraphView(props: {
           <GhostButton label={running ? t.btnPause : t.btnRun} solid={!running} onClick={() => (running ? props.onPause() : props.onPlay())} />
           <GhostButton label={t.btnReset} onClick={props.onReset} />
           <GhostButton label={t.btnNewGraph} onClick={props.onNewGraph} />
-          <div style={{ marginInlineStart: 'auto', display: 'flex', alignItems: 'center', gap: 10, minWidth: 200 }}>
+          <div style={{ marginInlineStart: 'auto', display: 'flex', alignItems: 'center', gap: 10, minWidth: 200, direction: 'ltr' }}>
             <span className="np-sans" style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 600 }}>{t.speed}</span>
             <input className="np-range" type="range" min={80} max={1500} step={20} value={speed} onChange={(e) => props.onSpeedChange(Number(e.target.value))} style={{ flex: 1 }} />
             <span className="np-mono" style={{ fontSize: 10.5, color: 'var(--fg)', fontVariantNumeric: 'tabular-nums', minWidth: 48, textAlign: 'end', fontWeight: 600 }}>{speed}ms</span>
