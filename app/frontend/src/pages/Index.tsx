@@ -329,7 +329,7 @@ export default function Index() {
               <div style={{ width: 12, height: 12, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
             </div>
             <div>
-              <div className="np-sans" style={{ fontSize: 12, letterSpacing: 1.5, color: 'var(--fg-strong)', fontWeight: 700 }}>{t.brand}</div>
+              <div className="np-sans" style={{ fontSize: 12, letterSpacing: 1.5, color: 'var(--fg-strong)', fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif" }}>{t.brand}</div>
               <div className="np-mono" style={{ fontSize: 8.5, letterSpacing: 1.5, color: 'var(--fg-faint)', textTransform: 'uppercase', marginTop: 2 }}>{t.tagline}</div>
             </div>
           </div>
@@ -498,7 +498,7 @@ export default function Index() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
             <div>
               <div className="np-mono" style={{ fontSize: 10, letterSpacing: 2.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 500 }}>{t.interactiveLearning}</div>
-              <h1 className="np-sans" style={{ margin: '8px 0 0', fontSize: 26, letterSpacing: 0.5, color: 'var(--fg-strong)', fontWeight: 800, lineHeight: 1.1 }}>
+              <h1 className="np-sans" style={{ margin: '8px 0 0', fontSize: 26, letterSpacing: 0.3, color: 'var(--fg-strong)', fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}>
                 {algoLabel[algo]}
               </h1>
               <div className="np-sans" style={{ marginTop: 6, fontSize: 11, color: 'var(--fg-dim)', letterSpacing: 0.3 }}>

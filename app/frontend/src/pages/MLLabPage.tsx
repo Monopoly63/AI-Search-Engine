@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Lang, Theme, DICTS, getSavedLang, getSavedTheme, applyDocumentLang, applyDocumentTheme } from './np-i18n';
 import MLLab from './MLLab';
+import LiveTrainer from './LiveTrainer';
 
 export default function MLLabPage() {
   const [lang, setLang] = useState<Lang>(() => getSavedLang());
@@ -13,6 +14,7 @@ export default function MLLabPage() {
   const t = DICTS[lang];
   const isRTL = lang === 'ar';
   const isLight = theme === 'light';
+  const [activeTab, setActiveTab] = useState<'analysis' | 'trainer'>('analysis');
 
   useEffect(() => { applyDocumentLang(lang);  localStorage.setItem('np-lang', lang);  }, [lang]);
   useEffect(() => { applyDocumentTheme(theme); localStorage.setItem('np-theme', theme); }, [theme]);
@@ -152,7 +154,7 @@ export default function MLLabPage() {
           </div>
         </div>
 
-        {/* ── ML Lab Module ── */}
+        {/* ── Tabs ── */}
         <div style={{
           background: 'var(--bg-panel)',
           border: '1px solid var(--border)',
@@ -160,7 +162,39 @@ export default function MLLabPage() {
           overflow: 'hidden',
           marginBottom: 40,
         }}>
-          <MLLab lang={lang} />
+          {/* Tab bar */}
+          <div style={{
+            display: 'flex', gap: 0,
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--bg-elevated)',
+          }}>
+            {([
+              { id: 'analysis', label: isRTL ? '📊 تحليل البيانات' : '📊 Data Analysis' },
+              { id: 'trainer',  label: isRTL ? '🚀 تدريب Live'    : '🚀 Live Trainer'  },
+            ] as const).map(tab => (
+              <button key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="ml-tab-btn"
+                style={{
+                  borderRadius: 0,
+                  borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                  color: activeTab === tab.id ? 'var(--fg-strong)' : 'var(--fg-faint)',
+                  background: 'transparent',
+                  borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                  paddingBottom: 10,
+                  fontFamily: 'Space Grotesk, Inter, sans-serif',
+                  fontSize: 12, fontWeight: 600,
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'analysis'
+            ? <MLLab lang={lang} />
+            : <LiveTrainer lang={lang} />
+          }
         </div>
       </div>
     </div>
