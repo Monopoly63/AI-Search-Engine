@@ -37,7 +37,7 @@ export function PremiumTopNav({
 
   return (
     <header className="premium-topbar" aria-label={isRTL ? 'التنقل الرئيسي' : 'Primary navigation'}>
-      <Link to="/" className="topbar-brand" aria-label="Synapse Nexus home">
+      <Link to="/" className="topbar-brand" aria-label="AI Search Intelligence home">
         <span className="brand-mark"><BrainCircuit aria-hidden="true" /></span>
         <span style={{ minWidth: 0 }}>
           <span className="brand-title">{title}</span>

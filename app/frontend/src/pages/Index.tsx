@@ -38,7 +38,7 @@ import {
 } from './np-i18n';
 
 /* ============================================================
-   SYNAPSE NEXUS AI — Search Studio
+   AI SEARCH INTELLIGENCE — Search Studio
    Premium interface rebuild · business logic preserved
    ============================================================ */
 

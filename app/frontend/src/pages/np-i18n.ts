@@ -106,8 +106,8 @@ export type Dict = {
 
 export const DICTS: Record<Lang, Dict> = {
   en: {
-    brand: 'SYNAPSE NEXUS AI',
-    tagline: 'Enterprise Quantum ML Engine v3.0',
+    brand: 'AI SEARCH INTELLIGENCE',
+    tagline: 'Enterprise AI Search Platform',
     algorithms: 'Algorithms',
     liveStats: 'Live Stats',
     gridVisualizer: 'Grid Visualizer',
@@ -222,8 +222,8 @@ export const DICTS: Record<Lang, Dict> = {
     hilDesc3: 'This makes Hill Climbing fast and memory-light, but vulnerable to local optima, plateaus, and ridges. It is the foundation for variants like simulated annealing.',
   },
   ar: {
-    brand: 'سينابس نكسس الذكي',
-    tagline: 'منصة الذكاء الاصطناعي الكمي · الإصدار 3.0',
+    brand: 'منصة AI Search Intelligence',
+    tagline: 'منصة بحث وذكاء اصطناعي مؤسسية',
     algorithms: 'الخوارزميات',
     liveStats: 'إحصائيات حيّة',
     gridVisualizer: 'مُحاكي الشبكة',
