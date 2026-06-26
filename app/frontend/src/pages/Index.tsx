@@ -78,6 +78,16 @@ export default function Index() {
   const toggleTheme = () => setTheme((th) => (th === 'dark' ? 'light' : 'dark'));
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
+
   /* ---------- Algorithm state ---------- */
   const [algo, setAlgo] = useState<AlgoKey>(() => getInitialAlgo(searchParams.get('algo')));
   const [fadeIn, setFadeIn] = useState<boolean>(true);
