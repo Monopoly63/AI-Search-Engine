@@ -2,6 +2,11 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { loadRuntimeConfig } from './lib/config.ts';
+import { getSavedTheme, applyDocumentTheme, getSavedLang, applyDocumentLang } from './pages/np-i18n';
+
+// Apply initial theme and language immediately
+applyDocumentTheme(getSavedTheme());
+applyDocumentLang(getSavedLang());
 
 // Load runtime configuration before rendering the app
 async function initializeApp() {

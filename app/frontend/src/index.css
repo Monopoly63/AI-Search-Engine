@@ -48,7 +48,7 @@
   --shadow-card:  0 2px 16px rgba(0,0,0,0.35);
 }
 
-[data-theme="light"] {
+[data-theme="light"], .light {
   /* Backgrounds */
   --bg:          #f5f6fa;
   --bg-alt:      #ffffff;
@@ -91,7 +91,7 @@
    Base
    ============================================================ */
 @layer base {
-  :root {
+  :root, [data-theme="dark"], .dark {
     --background: 0 0% 3.5%;
     --foreground: 0 0% 94%;
     --card: 0 0% 5%;
@@ -111,6 +111,29 @@
     --border: 0 0% 12%;
     --input: 0 0% 12%;
     --ring: 0 0% 60%;
+    --radius: 0.5rem;
+  }
+
+  [data-theme="light"], .light {
+    --background: 220 20% 97%;
+    --foreground: 224 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 25% 15%;
+    --primary: 224 25% 15%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 90%;
+    --secondary-foreground: 224 25% 15%;
+    --muted: 220 14% 90%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 220 14% 90%;
+    --accent-foreground: 224 25% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 87%;
+    --input: 220 13% 87%;
+    --ring: 239 84% 67%;
     --radius: 0.5rem;
   }
 }
