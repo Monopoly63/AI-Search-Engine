@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 
 export default function AuthErrorPage() {
@@ -11,12 +10,10 @@ export default function AuthErrorPage() {
     'Sorry, your authentication information is invalid or has expired';
 
   useEffect(() => {
-    // Countdown logic
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Redirect to home page
           window.location.href = '/';
           return 0;
         }
@@ -24,7 +21,6 @@ export default function AuthErrorPage() {
       });
     }, 1000);
 
-    // Clean up timer
     return () => clearInterval(timer);
   }, []);
 
@@ -33,53 +29,20 @@ export default function AuthErrorPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 p-6 text-center">
-      <div className="space-y-6 max-w-md">
-        <div className="space-y-4">
-          {/* Error icon */}
-          <div className="flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full"></div>
-              <AlertCircle
-                className="relative h-12 w-12 text-red-500"
-                strokeWidth={1.5}
-              />
-            </div>
-          </div>
-
-          {/* Error title */}
-          <h1 className="text-2xl font-bold text-gray-800">
-            Authentication Error
-          </h1>
-
-          {/* Error description */}
-          <p className="text-base text-muted-foreground">{errorMessage}</p>
-
-          {/* Countdown message */}
-          <div className="pt-2">
-            <p className="text-sm text-gray-500">
-              {countdown > 0 ? (
-                <>
-                  Will automatically return to the home page in{' '}
-                  <span className="text-blue-600 font-semibold text-base">
-                    {countdown}
-                  </span>{' '}
-                  seconds
-                </>
-              ) : (
-                'Redirecting...'
-              )}
-            </p>
-          </div>
+    <div className="premium-root" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24 }}>
+      <section className="glass-card card-pad" style={{ width: 'min(100%, 460px)', textAlign: 'center' }}>
+        <div style={{ display: 'inline-grid', placeItems: 'center', width: 58, height: 58, borderRadius: 22, border: '1px solid var(--border)', background: 'var(--danger-soft)', color: 'var(--danger)' }}>
+          <AlertCircle aria-hidden="true" size={28} strokeWidth={1.7} />
         </div>
-
-        {/* Return to home button */}
-        <div className="flex justify-center pt-2">
-          <Button onClick={handleReturnHome} className="px-6">
-            Return to Home
-          </Button>
-        </div>
-      </div>
+        <h1 className="section-title" style={{ marginTop: 18 }}>Authentication Error</h1>
+        <p className="section-description" style={{ marginTop: 10 }}>{errorMessage}</p>
+        <p className="metric-sub" style={{ marginTop: 16 }}>
+          {countdown > 0 ? `Returning home in ${countdown} seconds` : 'Redirecting...'}
+        </p>
+        <button type="button" className="primary-button" onClick={handleReturnHome} style={{ marginTop: 18 }}>
+          Return to Home
+        </button>
+      </section>
     </div>
   );
 }

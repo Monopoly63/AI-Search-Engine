@@ -150,7 +150,7 @@ function Axes({pad,W,H,xLabel,yLabel}:{pad:any;W:number;H:number;xLabel?:string;
 function ScatterChart({data,colorFn,xLabel,yLabel}:{data:[number,number,number][];colorFn:(v:number)=>string;xLabel?:string;yLabel?:string}){
   const pad={t:12,r:8,b:28,l:32};const W=300-pad.l-pad.r;const H=180-pad.t-pad.b;
   const {px,py}=useScaleXY(data.map(d=>[d[0],d[1]]),pad,W,H);
-  return<svg width="100%" viewBox="0 0 300 180" className="overflow-visible">
+  return<svg width="100%" viewBox="0 0 300 180" style={{ overflow: 'visible' }}>
     <Axes pad={pad} W={W} H={H} xLabel={xLabel} yLabel={yLabel}/>
     {data.map(([x,y,c],i)=><circle key={i} cx={px(x)} cy={py(y)} r={3} fill={colorFn(c)} opacity={0.75}/>)}
   </svg>;
@@ -162,7 +162,7 @@ function LRChart({data}:{data:[number,number,number][]}){
   const {px,py}=useScaleXY(pts,pad,W,H);
   const pMin=data.reduce((a,b)=>a[0]<b[0]?a:b);
   const pMax=data.reduce((a,b)=>a[0]>b[0]?a:b);
-  return<svg width="100%" viewBox="0 0 300 180" className="overflow-visible">
+  return<svg width="100%" viewBox="0 0 300 180" style={{ overflow: 'visible' }}>
     <Axes pad={pad} W={W} H={H} xLabel="Work Hours" yLabel="Burnout Score"/>
     {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={2.5} fill="var(--fg-muted)"opacity={0.7}/>)}
     <line x1={px(pMin[0])} y1={py(pMin[2])} x2={px(pMax[0])} y2={py(pMax[2])} stroke="var(--accent)" strokeWidth={1.5}/>
@@ -188,7 +188,7 @@ function BarChart({data}:{data:[string,number][]}){
 function PCAScatter({data}:{data:[number,number][]}){
   const pad={t:12,r:8,b:28,l:32};const W=300-pad.l-pad.r;const H=180-pad.t-pad.b;
   const {px,py}=useScaleXY(data,pad,W,H);
-  return<svg width="100%" viewBox="0 0 300 180" className="overflow-visible">
+  return<svg width="100%" viewBox="0 0 300 180" style={{ overflow: 'visible' }}>
     <Axes pad={pad} W={W} H={H} xLabel="PC1 (41.0%)" yLabel="PC2 (26.4%)"/>
     {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={3} fill="var(--fg-muted)" opacity={0.8}/>)}
   </svg>;

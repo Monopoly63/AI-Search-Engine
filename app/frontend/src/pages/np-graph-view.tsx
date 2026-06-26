@@ -62,10 +62,6 @@ export function GraphView(props: {
         <div className="graph-svg-wrap">
           <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" style={{ display: 'block', direction: 'ltr' }}>
             <defs>
-              <filter id="np-premium-glow" x="-70%" y="-70%" width="240%" height="240%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
               <radialGradient id="node-sheen" cx="35%" cy="24%" r="70%">
                 <stop offset="0%" stopColor="rgba(255,255,255,.18)" />
                 <stop offset="100%" stopColor="rgba(255,255,255,.02)" />
@@ -78,7 +74,7 @@ export function GraphView(props: {
               const bothVisited = visitedSet.has(e.a) && visitedSet.has(e.b);
               const stroke = onPath ? 'var(--accent)' : bothVisited ? 'var(--visited-border)' : 'var(--border)';
               const width = onPath ? 3 : bothVisited ? 1.8 : 1.1;
-              return <line key={i} x1={a.x * W} y1={a.y * H} x2={b.x * W} y2={b.y * H} stroke={stroke} strokeWidth={width} strokeLinecap="round" filter={onPath ? 'url(#np-premium-glow)' : undefined} style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }} />;
+              return <line key={i} x1={a.x * W} y1={a.y * H} x2={b.x * W} y2={b.y * H} stroke={stroke} strokeWidth={width} strokeLinecap="round" style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }} />;
             })}
             {graph.nodes.map((n) => {
               const isStart = n.id === graph.start; const isGoal = n.id === graph.goal;
@@ -93,7 +89,7 @@ export function GraphView(props: {
               return (
                 <g key={n.id}>
                   {isCurrent && <circle cx={n.x * W} cy={n.y * H} r={r + 10} fill="none" stroke="var(--border-accent)" strokeWidth={1.2} style={{ animation: 'np-start-pulse 1.35s ease-in-out infinite' }} />}
-                  <circle cx={n.x * W} cy={n.y * H} r={r} fill={fill} stroke={stroke} strokeWidth={strokeW} filter={isCurrent || isOnPath ? 'url(#np-premium-glow)' : undefined} style={{ transition: 'fill 240ms ease, stroke 240ms ease, r 240ms ease' }} />
+                  <circle cx={n.x * W} cy={n.y * H} r={r} fill={fill} stroke={stroke} strokeWidth={strokeW} style={{ transition: 'fill 240ms ease, stroke 240ms ease, r 240ms ease' }} />
                   <circle cx={n.x * W - 4} cy={n.y * H - 5} r={Math.max(2, r * .2)} fill="rgba(255,255,255,.16)" opacity={isOnPath ? .32 : .7} />
                   <text x={n.x * W} y={n.y * H + 4} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={11} fontWeight={800} fill={textFill} style={{ pointerEvents: 'none', transition: 'fill 240ms ease' }}>{n.label}</text>
                   {(isStart || isGoal) && (
