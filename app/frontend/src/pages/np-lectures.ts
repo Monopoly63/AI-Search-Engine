@@ -5,7 +5,7 @@
 
 export type LecKey =
   | 'lab1' | 'lab2' | 'lab3a' | 'lab3b'
-  | 'lab4' | 'lab6' | 'lab7' | 'lab8' | 'codes';
+  | 'lab4' | 'lab6' | 'lab7' | 'lab8' | 'lab9' | 'codes';
 
 export interface LecSection {
   heading: { en: string; ar: string };
@@ -317,10 +317,43 @@ export const AI_LECTURES: AILecture[] = [
     ],
   },
 
+  // ─── Lab 9: Predicate & First-Order Logic ──────────────────────
+  {
+    id: 'lab9',
+    number: 9,
+    title: { en: 'Predicate Logic & First-Order Logic (FOL)', ar: 'المنطق الرمزي ومنطق المحمولات (First-Order Logic)' },
+    summary: { en: 'Converting natural language to formal First-Order Logic formulas using Quantifiers (∀, ∃), Predicates, Negation, and Arity classification.', ar: 'تحويل الجمل الطبيعية إلى صيغ منطقية رياضية (First-Order Logic) باستخدام المكممات (∀, ∃) والمحمولات والنفي وتصنيف المعاملات.' },
+    tag: { en: 'Formal Logic', ar: 'المنطق الرياضي' },
+    accent: 'purple',
+    sections: [
+      {
+        heading: { en: 'Predicate Arity Classification', ar: 'تصنيف المحمولات حسب عدد المعاملات (Arity)' },
+        paragraphs: [
+          { en: 'Predicates express properties or relations. Unary takes 1 argument e.g. Student(x), Binary takes 2 e.g. Teaches(Nader, Logic), Ternary takes 3 e.g. Gives(Ali, Book, Sara).', ar: 'المحمولات تعبر عن خصائص أو علاقات. الأحادية تأخذ معامل واحد مثل Student(Mona)، الثنائية تأخذ 2 مثل Teaches(Nader, Logic)، الثلاثية تأخذ 3 مثل Gives(Ali, Book, Sara).' },
+        ],
+        code: `Student("Mona")           # Unary: منى طالبة\nTeaches("Nader", "Logic") # Binary: نادر يدرس المنطق\nGives("Ali", "Book", "Sara") # Ternary: علي يعطي كتاباً لسارة`,
+      },
+      {
+        heading: { en: 'Universal Quantifier (∀) Conversion', ar: 'تحويل الجمل الشاملة بالمكمم العام (∀)' },
+        paragraphs: [
+          { en: 'Rule: "Every student registered in university studies at least one course." In FOL, Universal quantifiers are almost always paired with Implication (→).', ar: 'قاعدة: "كل طالب مسجل في الجامعة يدرس مقرراً واحداً على الأقل". في منطق المحمولات، يرتبط المكمم العام دائماً بعلاقة الاستلزام (→).' },
+        ],
+        code: `∀x ((Student(x) ∧ Registered(x, University)) → ∃y (Course(y) ∧ Studies(x, y)))`,
+      },
+      {
+        heading: { en: 'Existential Quantifier (∃) & Negation', ar: 'المكمم الوجودي (∃) والنفي المنطقي' },
+        paragraphs: [
+          { en: 'Rule: "There exists a student who does not like math but likes programming." Existential quantifiers pair with Conjunction (∧), never implication.', ar: 'قاعدة: "يوجد طالب لا يحب الرياضيات ولكنه يحب البرمجة". يرتبط المكمم الوجودي دائماً بالربط العطف (∧) وليس الاستلزام.' },
+        ],
+        code: `∃x (Student(x) ∧ ¬Likes(x, Math) ∧ Likes(x, Programming))`,
+      },
+    ],
+  },
+
   // ─── Complete Code Reference ──────────────────────────────────
   {
     id: 'codes',
-    number: 9,
+    number: 10,
     title: { en: 'Complete Code Reference', ar: 'مرجع الأكواد الكامل' },
     summary: { en: 'All AI lab programs in one file — from BFS/DFS to A*, Decision Tree, Linear Regression, K-Means, PCA, and Isolation Forest.', ar: 'جميع برامج مختبر الذكاء الاصطناعي في ملف واحد — من BFS/DFS إلى A*، شجرة القرار، الانحدار الخطي، K-Means، PCA، وIsolation Forest.' },
     tag: { en: 'Code Reference', ar: 'مرجع الأكواد' },
