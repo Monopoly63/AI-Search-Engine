@@ -11,80 +11,80 @@
 
 :root, [data-theme="dark"] {
   /* Backgrounds */
-  --bg:          #030712;
-  --bg-alt:      #080e1a;
-  --bg-panel:    #0f172a;
-  --bg-elevated: #1e293b;
-  --bg-dot:      rgba(0,240,255,0.08);
+  --bg:          #0b0c10;
+  --bg-alt:      #0e0f14;
+  --bg-panel:    #13151c;
+  --bg-elevated: #181b24;
+  --bg-dot:      rgba(99,102,241,0.07);
 
   /* Borders */
-  --border:        rgba(0,240,255,0.12);
-  --border-strong: rgba(0,240,255,0.28);
-  --border-accent: #00f0ff;
+  --border:        rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.16);
+  --border-accent: rgba(99,102,241,0.55);
 
   /* Text */
-  --fg:        #e2e8f0;
-  --fg-strong: #ffffff;
-  --fg-muted:  #94a3b8;
-  --fg-dim:    #64748b;
-  --fg-faint:  #475569;
+  --fg:        #dde1f0;
+  --fg-strong: #f0f2ff;
+  --fg-muted:  #8890aa;
+  --fg-dim:    #555c78;
+  --fg-faint:  #353d55;
 
-  /* Brand accent — Cyber Cyan & Quantum Emerald */
-  --accent:      #00f0ff;
-  --accent-2:    #10b981;
-  --accent-fg:   #020617;
-  --accent-glow: rgba(0,240,255,0.55);
-  --accent-soft: rgba(0,240,255,0.12);
+  /* Brand accent — Electric Indigo (Official) */
+  --accent:      #6366f1;
+  --accent-2:    #818cf8;
+  --accent-fg:   #ffffff;
+  --accent-glow: rgba(99,102,241,0.45);
+  --accent-soft: rgba(99,102,241,0.12);
 
   /* Grid cell colors */
-  --wall:           #334155;
-  --visited:        rgba(16,185,129,0.25);
-  --visited-border: rgba(16,185,129,0.6);
-  --path:           #00f0ff;
+  --wall:           #1e2030;
+  --visited:        rgba(99,102,241,0.22);
+  --visited-border: rgba(99,102,241,0.5);
+  --path:           #6366f1;
 
   /* Shadows */
-  --shadow-glow:  0 0 30px rgba(0,240,255,0.35);
-  --shadow-panel: 0 8px 32px rgba(0,0,0,0.6);
-  --shadow-card:  0 4px 20px rgba(0,0,0,0.5);
+  --shadow-glow:  0 0 25px rgba(99,102,241,0.35);
+  --shadow-panel: 0 12px 40px rgba(0,0,0,0.7);
+  --shadow-card:  0 6px 24px rgba(0,0,0,0.5);
 }
 
 [data-theme="light"], .light {
   /* Backgrounds */
-  --bg:          #f8fafc;
+  --bg:          #f5f6fa;
   --bg-alt:      #ffffff;
-  --bg-panel:    #f1f5f9;
-  --bg-elevated: #e2e8f0;
-  --bg-dot:      rgba(14,165,233,0.12);
+  --bg-panel:    #eceef6;
+  --bg-elevated: #e4e6f0;
+  --bg-dot:      rgba(99,102,241,0.09);
 
   /* Borders */
-  --border:        rgba(15,23,42,0.12);
-  --border-strong: rgba(15,23,42,0.25);
-  --border-accent: #0ea5e9;
+  --border:        rgba(0,0,0,0.09);
+  --border-strong: rgba(0,0,0,0.22);
+  --border-accent: rgba(99,102,241,0.6);
 
   /* Text */
-  --fg:        #1e293b;
-  --fg-strong: #0f172a;
-  --fg-muted:  #475569;
-  --fg-dim:    #64748b;
-  --fg-faint:  #94a3b8;
+  --fg:        #1a1d2e;
+  --fg-strong: #0a0b12;
+  --fg-muted:  #4a5168;
+  --fg-dim:    #6b7490;
+  --fg-faint:  #9099b5;
 
   /* Brand accent */
-  --accent:      #0ea5e9;
-  --accent-2:    #059669;
+  --accent:      #4f52e0;
+  --accent-2:    #6366f1;
   --accent-fg:   #ffffff;
-  --accent-glow: rgba(14,165,233,0.35);
-  --accent-soft: rgba(14,165,233,0.12);
+  --accent-glow: rgba(79,82,224,0.3);
+  --accent-soft: rgba(99,102,241,0.10);
 
   /* Grid */
-  --wall:           #475569;
-  --visited:        rgba(5,150,105,0.18);
-  --visited-border: rgba(5,150,105,0.45);
-  --path:           #0ea5e9;
+  --wall:           #2a2d3e;
+  --visited:        rgba(99,102,241,0.18);
+  --visited-border: rgba(99,102,241,0.45);
+  --path:           #4f52e0;
 
   /* Shadows */
-  --shadow-glow:  0 0 20px rgba(14,165,233,0.25);
-  --shadow-panel: 0 4px 24px rgba(0,0,0,0.08);
-  --shadow-card:  0 2px 12px rgba(0,0,0,0.06);
+  --shadow-glow:  0 0 20px rgba(99,102,241,0.25);
+  --shadow-panel: 0 8px 30px rgba(0,0,0,0.12);
+  --shadow-card:  0 4px 16px rgba(0,0,0,0.08);
 }
 
 /* ============================================================

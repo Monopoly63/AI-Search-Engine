@@ -4,6 +4,7 @@
  * Supports: Kaggle CSV import, manual CSV, sample datasets
  */
 import { useState, useRef, useCallback } from 'react';
+import { executeRealMLTraining } from '../lib/real-ml-engine';
 
 /* ── Types ── */
 type LogEntry = { level: 'info' | 'success' | 'warn' | 'error' | 'dim'; msg: string };
@@ -218,13 +219,19 @@ export default function LiveTrainer({ lang = 'en' }: Props) {
     setStatus('training'); setLogs([]); setProgress(0); setMetrics(null); setModelBlob(null);
     abortRef.current = new AbortController();
     try {
-      const result = await runTraining(
-        dataset, algorithm, targetCol,
+      addLog({ level: 'info', msg: `▶ Initializing authentic mathematical ML training engine...` });
+      const result = await executeRealMLTraining(
+        dataset, algorithm,
         dataset === 'custom' ? csvData : null,
-        addLog, setProgress, abortRef.current.signal
+        epochLog => {
+          addLog({ level: 'dim', msg: `  Epoch ${String(epochLog.epoch).padStart(2,'0')}/${epochLog.totalEpochs}  Loss=${epochLog.loss.toFixed(4)}  Val=${epochLog.valMetric.toFixed(4)}` });
+        },
+        setProgress,
+        abortRef.current.signal
       );
       setMetrics(result.metrics);
-      setModelBlob(result.modelBlob);
+      setModelBlob(new Blob([result.modelExportText], { type: 'application/octet-stream' }));
+      addLog({ level: 'success', msg: `✅ Mathematical weight fitting complete across ${result.recordsTrained.toLocaleString()} records!` });
       setStatus('done');
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'aborted') {
