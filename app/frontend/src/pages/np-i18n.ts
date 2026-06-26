@@ -106,8 +106,8 @@ export type Dict = {
 
 export const DICTS: Record<Lang, Dict> = {
   en: {
-    brand: 'AI SEARCH INTELLIGENCE',
-    tagline: 'Enterprise AI Search Platform',
+    brand: 'AI INTELLIGENCE',
+    tagline: 'Enterprise AI Platform',
     algorithms: 'Algorithms',
     liveStats: 'Live Stats',
     gridVisualizer: 'Grid Visualizer',
@@ -222,8 +222,8 @@ export const DICTS: Record<Lang, Dict> = {
     hilDesc3: 'This makes Hill Climbing fast and memory-light, but vulnerable to local optima, plateaus, and ridges. It is the foundation for variants like simulated annealing.',
   },
   ar: {
-    brand: 'منصة AI Search Intelligence',
-    tagline: 'منصة بحث وذكاء اصطناعي مؤسسية',
+    brand: 'منصة AI Intelligence',
+    tagline: 'منصة الذكاء الاصطناعي المؤسسية',
     algorithms: 'الخوارزميات',
     liveStats: 'إحصائيات حيّة',
     gridVisualizer: 'مُحاكي الشبكة',

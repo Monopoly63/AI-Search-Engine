@@ -11,7 +11,7 @@ function escapeHtmlAttr(str: string): string {
     .replace(/'/g, '&#39;');
 }
 
-process.env.VITE_APP_TITLE ??= process.env.OVERVIEW_TITLE ?? 'AI Search Intelligence';
+process.env.VITE_APP_TITLE ??= process.env.OVERVIEW_TITLE ?? 'AI Intelligence';
 process.env.VITE_APP_DESCRIPTION ??= process.env.OVERVIEW_DESCRIPTION ?? 'Enterprise AI search, pathfinding, and machine-learning intelligence platform';
 process.env.VITE_APP_TITLE = escapeHtmlAttr(process.env.VITE_APP_TITLE);
 process.env.VITE_APP_DESCRIPTION = escapeHtmlAttr(process.env.VITE_APP_DESCRIPTION);

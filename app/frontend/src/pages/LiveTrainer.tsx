@@ -86,7 +86,7 @@ async function runTraining(
     Object.entries(finalMetrics).forEach(([k, v]) => onLog({ level: 'success', msg: `  ${k.padEnd(14)}: ${v}` }));
     
     const pklHeader = `\x80\x04\x95\x35\x01\x00\x00\x00\x00\x00\x00]\x94(\x8c\x1aAI_SEARCH_INTELLIGENCE_AUTOML_500K\x94\x8c\x11StackingRegressor\x94\x8c\x050.868\x94e.`;
-    const fullExport = `# AI SEARCH INTELLIGENCE ENTERPRISE SERIALIZED MODEL (.pkl Header + Config)\nMODEL=StackingRegressor_500k\nRECORDS=500000\nFEATURES=48\nR2_SCORE=0.868\nMSE=0.0105\n\n# BINARY WEIGHTS BUFFER\n` + pklHeader;
+    const fullExport = `# AI INTELLIGENCE ENTERPRISE SERIALIZED MODEL (.pkl Header + Config)\nMODEL=StackingRegressor_500k\nRECORDS=500000\nFEATURES=48\nR2_SCORE=0.868\nMSE=0.0105\n\n# BINARY WEIGHTS BUFFER\n` + pklHeader;
     return { metrics: finalMetrics, modelBlob: new Blob([fullExport], { type: 'application/octet-stream' }) };
   }
 
@@ -165,7 +165,7 @@ async function runTraining(
 
   // Create model summary as downloadable text
   const modelText = [
-    `# AI Search Intelligence — Trained Model`,
+    `# AI Intelligence — Trained Model`,
     `Dataset:   ${dataset}`,
     `Algorithm: ${algorithm}`,
     `Target:    ${targetCol || 'auto-detected'}`,
