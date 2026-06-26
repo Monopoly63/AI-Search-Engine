@@ -126,7 +126,7 @@ export async function executeRealMLTraining(
   onProgress(25);
   await yieldThread();
 
-  let weights = Array.from({ length: numCols }, () => (Math.random() - 0.5) * 0.1);
+  const weights = Array.from({ length: numCols }, () => (Math.random() - 0.5) * 0.1);
   let bias = 0;
   const epochs = algorithmId === 'neural_net' ? 15 : algorithmId === 'kmeans' ? 10 : 12;
   const learningRate = 0.05;

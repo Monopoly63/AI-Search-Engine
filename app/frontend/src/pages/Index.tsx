@@ -1,10 +1,34 @@
-import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  BookOpen,
+  BrainCircuit,
+  Code2,
+  ExternalLink,
+  FlaskConical,
+  Gauge,
+  Github,
+  Grid3X3,
+  Instagram,
+  Languages,
+  Menu,
+  Moon,
+  Network,
+  PanelRightOpen,
+  Play,
+  RotateCcw,
+  Route,
+  Sparkles,
+  Sun,
+  TerminalSquare,
+  X,
+} from 'lucide-react';
 import { ALGOS, AlgoKey, CellState, Graph, GraphTrace, Point, RunStatus, ROWS, COLS } from './np-types';
 import { runAlgorithm, buildRandomGraph, traceGraphBFS, traceGraphDFS, traceGraphGreedy, traceGraphHill, traceGraphAStar } from './np-algos';
 import { CONTENT } from './np-content';
 import {
-  SidebarLabel, MiniStatRow, SectionBar, Divider, Badge,
+  SidebarLabel, MiniStatRow, Divider, Badge,
   FlowDiagram, CodeBlock, GhostButton, StatusPill, Numeric, StatRowCompact, LabelRow, Legend,
 } from './np-ui';
 import { GraphView } from './np-graph-view';
@@ -14,8 +38,8 @@ import {
 } from './np-i18n';
 
 /* ============================================================
-   NEURAL PATHFINDER // AI SEARCH ENGINE v1.0
-   By Abdulmoin Hablas
+   SYNAPSE NEXUS AI — Search Studio
+   Premium interface rebuild · business logic preserved
    ============================================================ */
 
 const AUTHOR_NAME = 'Abdulmoin Hablas';
@@ -34,10 +58,13 @@ function makeEmptyGrid(): CellState[][] {
 
 function pointsEqual(a: Point, b: Point) { return a.r === b.r && a.c === b.c; }
 
-/* ============================================================ */
+function getInitialAlgo(param: string | null): AlgoKey {
+  return ALGOS.some((a) => a.key === param) ? (param as AlgoKey) : 'BFS';
+}
 
 export default function Index() {
   /* ---------- i18n + Theme ---------- */
+  const [searchParams, setSearchParams] = useSearchParams();
   const [lang, setLang] = useState<Lang>(() => getSavedLang());
   const [theme, setTheme] = useState<Theme>(() => getSavedTheme());
   const t = DICTS[lang];
@@ -52,7 +79,7 @@ export default function Index() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   /* ---------- Algorithm state ---------- */
-  const [algo, setAlgo] = useState<AlgoKey>('BFS');
+  const [algo, setAlgo] = useState<AlgoKey>(() => getInitialAlgo(searchParams.get('algo')));
   const [fadeIn, setFadeIn] = useState<boolean>(true);
 
   const algoLabel = useMemo<Record<AlgoKey, string>>(() => ({
@@ -62,7 +89,9 @@ export default function Index() {
   const handleAlgoChange = (next: AlgoKey) => {
     if (next === algo) return;
     setFadeIn(false);
+    setSearchParams({ algo: next }, { replace: true });
     window.setTimeout(() => { setAlgo(next); setFadeIn(true); }, 180);
+    setSidebarOpen(false);
   };
 
   /* ---------- Grid drawer state ---------- */
@@ -82,6 +111,15 @@ export default function Index() {
     window.addEventListener('mouseup', up);
     return () => window.removeEventListener('mouseup', up);
   }, []);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDrawerOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [drawerOpen]);
 
   const toggleWall = useCallback((r: number, c: number, mode: 'wall' | 'erase') => {
     setGrid((prev) => {
@@ -132,6 +170,18 @@ export default function Index() {
       return next;
     });
     setGridRun({ running: true, stepIdx: 0, pathIdx: 0, snap, status: 'SEARCHING' });
+  };
+
+  const toggleGridPlayback = () => {
+    if (gridRun.running) {
+      setGridRun((r) => ({ ...r, running: false }));
+      return;
+    }
+    if (gridRun.snap && gridRun.status === 'SEARCHING') {
+      setGridRun((r) => ({ ...r, running: true }));
+      return;
+    }
+    playGrid();
   };
 
   useEffect(() => {
@@ -218,7 +268,7 @@ export default function Index() {
   };
 
   /* ---------- Grid cell size ---------- */
-  const cellSize = 26;
+  const cellSize = 'clamp(18px, 4.8vw, 26px)';
 
   /* ---------- Mini sidebar stats ---------- */
   const sidebarStats = useMemo(() => {
@@ -231,7 +281,6 @@ export default function Index() {
   const localizedContent = useMemo(() => {
     const baseRaw = CONTENT[algo];
     const base = { ...baseRaw.properties };
-    // Build bilingual descriptions
     const descKey: Record<AlgoKey, string[]> = {
       BFS: [t.bfsDesc1, t.bfsDesc2, t.bfsDesc3],
       DFS: [t.dfsDesc1, t.dfsDesc2, t.dfsDesc3],
@@ -280,392 +329,290 @@ export default function Index() {
     gStepIdx === 0 ? t.statusIdle : t.statusPaused;
 
   const displayedAuthor = lang === 'ar' ? AUTHOR_NAME_AR : AUTHOR_NAME;
-
-  /* ============================================================ */
+  const currentAlgoMeta = ALGOS.find((a) => a.key === algo)!;
+  const currentPathLen = graphTrace.found ? graphTrace.finalPath.length : 0;
+  const gridExplored = gridRun.snap ? Math.min(gridRun.stepIdx, gridRun.snap.visitedOrder.length) : 0;
 
   return (
-    <div className="np-dot-grid" dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
-      <div className="np-shell" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', minHeight: '100vh' }}>
-
-      {/* Mobile nav toggle */}
-      <div className="np-mobile-header" style={{
-        display: 'none',
-        position: 'sticky', top: 0, zIndex: 50,
-        padding: '10px 16px',
-        background: 'var(--bg)',
-        borderBottom: '1px solid var(--border)',
-        alignItems: 'center', justifyContent: 'space-between',
-      }}
-        // show on mobile via CSS class
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 26, height: 26, border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 3 }}>
-            <div style={{ width: 9, height: 9, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
-          </div>
-          <span className="np-sans" style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'var(--fg-strong)', textTransform: 'uppercase' }}>{t.brand}</span>
-        </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={toggleTheme} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: 'var(--bg-panel)', color: 'var(--fg)', fontSize: 10, cursor: 'pointer', borderRadius: 3 }}>
-            {isLight ? '☀' : '☾'}
+    <div className="premium-root" dir={isRTL ? 'rtl' : 'ltr'}>
+      <header className="mobile-commandbar">
+        <Link to="/" className="brand-lockup" style={{ textDecoration: 'none' }}>
+          <span className="brand-mark"><BrainCircuit aria-hidden="true" /></span>
+          <span>
+            <span className="brand-title">{t.brand}</span>
+            <span className="brand-kicker">{t.tagline}</span>
+          </span>
+        </Link>
+        <div className="control-cluster">
+          <button className="icon-button" type="button" onClick={toggleTheme} aria-label={isRTL ? 'تبديل المظهر' : 'Toggle theme'}>
+            {isLight ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </button>
-          <button onClick={toggleLang} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: 'var(--bg-panel)', color: 'var(--fg)', fontSize: 10, cursor: 'pointer', borderRadius: 3 }}>
-            {lang === 'en' ? 'ع' : 'EN'}
+          <button className="icon-button" type="button" onClick={toggleLang} aria-label={isRTL ? 'تبديل اللغة' : 'Toggle language'}>
+            <Languages aria-hidden="true" />
           </button>
-          <button onClick={() => setSidebarOpen(o => !o)} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: sidebarOpen ? 'var(--accent-soft)' : 'var(--bg-panel)', color: 'var(--fg)', fontSize: 12, cursor: 'pointer', borderRadius: 3 }}>
-            {sidebarOpen ? '✕' : '☰'}
+          <button className="icon-button" type="button" onClick={() => setSidebarOpen((o) => !o)} aria-label={isRTL ? 'فتح القائمة' : 'Open navigation'}>
+            {sidebarOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
         </div>
-      </div>
-        {/* ========== SIDEBAR ========== */}
-        <aside className={`np-sidebar np-scroll${sidebarOpen ? " np-sidebar--open" : ""}`} style={{
-          margin: '16px',
-          borderRadius: '24px',
-          border: '1px solid rgba(255,255,255,0.12)',
-          background: 'rgba(19, 21, 28, 0.75)',
-          backdropFilter: 'blur(24px)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
-          padding: '24px 20px',
-          position: 'sticky', top: '16px', alignSelf: 'start', height: 'calc(100vh - 32px)', overflowY: 'auto',
-        }}>
-          {/* Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ width: 34, height: 34, border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-glow)', borderRadius: 4 }}>
-              <div style={{ width: 12, height: 12, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
-            </div>
-            <div>
-              <div className="np-sans" style={{ fontSize: 12, letterSpacing: 1.5, color: 'var(--fg-strong)', fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif" }}>{t.brand}</div>
-              <div className="np-mono" style={{ fontSize: 8.5, letterSpacing: 1.5, color: 'var(--fg-faint)', textTransform: 'uppercase', marginTop: 2 }}>{t.tagline}</div>
-            </div>
+      </header>
+
+      <div className="premium-shell">
+        <aside className={`command-rail glass-card${sidebarOpen ? ' is-open' : ''}`} aria-label={isRTL ? 'مساحة التحكم' : 'Command rail'}>
+          <div className="brand-lockup desktop-only">
+            <span className="brand-mark"><BrainCircuit aria-hidden="true" /></span>
+            <span style={{ minWidth: 0 }}>
+              <span className="brand-title">{t.brand}</span>
+              <span className="brand-kicker">{t.tagline}</span>
+            </span>
           </div>
 
-          {/* Author card */}
-          <div className="np-glass np-sidebar-author" style={{ padding: 12, borderRadius: 4, marginBottom: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-soft) 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--accent-fg)', fontWeight: 800, fontSize: 14,
-                boxShadow: 'var(--shadow-glow)',
-                fontFamily: 'Inter, sans-serif',
-                flexShrink: 0,
-              }}>{lang === 'ar' ? 'ع.ح' : 'AH'}</div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div className="np-sans" style={{ fontSize: 12, color: 'var(--fg-strong)', fontWeight: 700, letterSpacing: 0.3, lineHeight: 1.2 }}>{displayedAuthor}</div>
-                <div className="np-sans" style={{ fontSize: 9.5, color: 'var(--fg-dim)', letterSpacing: 0.5, marginTop: 2 }}>{t.role}</div>
+          <div className="rail-scroll np-scroll">
+            <div className="rail-section">
+              <SidebarLabel text={isRTL ? 'الملاحة' : 'Navigation'} />
+              <nav className="rail-nav">
+                <Link to="/" onClick={() => setSidebarOpen(false)} className="rail-nav-link is-active">
+                  <span className="nav-icon"><Network aria-hidden="true" /></span>
+                  <span className="algo-copy"><span className="algo-name">{isRTL ? 'استوديو البحث' : 'Search Studio'}</span><span className="algo-meta">AI pathfinding runtime</span></span>
+                </Link>
+                <Link to="/ml-lab" onClick={() => setSidebarOpen(false)} className="rail-nav-link">
+                  <span className="nav-icon"><FlaskConical aria-hidden="true" /></span>
+                  <span className="algo-copy"><span className="algo-name">{isRTL ? 'مختبر ML' : 'ML Lab'}</span><span className="algo-meta">Real dataset analysis</span></span>
+                </Link>
+                <Link to="/theory" onClick={() => setSidebarOpen(false)} className="rail-nav-link">
+                  <span className="nav-icon"><BookOpen aria-hidden="true" /></span>
+                  <span className="algo-copy"><span className="algo-name">{isRTL ? 'المحاضرات' : 'Theory'}</span><span className="algo-meta">Lectures and code</span></span>
+                </Link>
+              </nav>
+            </div>
+
+            <div style={{ height: 18 }} />
+            <div className="rail-section">
+              <SidebarLabel text={t.algorithms} />
+              <div className="rail-nav" role="listbox" aria-label={t.algorithms}>
+                {ALGOS.map((a, index) => {
+                  const active = a.key === algo;
+                  return (
+                    <button
+                      key={a.key}
+                      type="button"
+                      onClick={() => handleAlgoChange(a.key)}
+                      className={`algorithm-button${active ? ' is-active' : ''}`}
+                      aria-pressed={active}
+                    >
+                      <span className="algo-index">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="algo-copy">
+                        <span className="algo-name">{algoLabel[a.key]}</span>
+                        <span className="algo-meta">{a.short}</span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5 }}>
-              <SocialLink href={PORTFOLIO_URL} label={t.portfolio} icon="◈" />
-              <SocialLink href={INSTAGRAM_URL} label={t.instagram} icon="◉" />
-              <SocialLink href={GITHUB_URL} label={t.github} icon="⟠" />
+
+            <div style={{ height: 18 }} />
+            <div className="rail-section">
+              <SidebarLabel text={t.liveStats} />
+              <div className="telemetry-list">
+                <MiniStatRow label={t.statAlgorithm} value={algo} highlight />
+                <MiniStatRow label={t.statExplored} value={`${sidebarStats.explored}/${sidebarStats.total}`} />
+                <MiniStatRow label={t.statPath} value={String(sidebarStats.pathLen)} />
+                <MiniStatRow label={t.statStatus} value={statusText} />
+              </div>
+            </div>
+
+            <div style={{ height: 18 }} />
+            <div className="author-card">
+              <div className="author-row">
+                <span className="avatar-orb">{lang === 'ar' ? 'عح' : 'AH'}</span>
+                <span style={{ minWidth: 0 }}>
+                  <span className="author-name">{displayedAuthor}</span>
+                  <span className="author-role">{t.role}</span>
+                </span>
+              </div>
+              <div className="social-grid">
+                <SocialLink href={PORTFOLIO_URL} label={t.portfolio}><ExternalLink aria-hidden="true" /></SocialLink>
+                <SocialLink href={INSTAGRAM_URL} label={t.instagram}><Instagram aria-hidden="true" /></SocialLink>
+                <SocialLink href={GITHUB_URL} label={t.github}><Github aria-hidden="true" /></SocialLink>
+              </div>
             </div>
           </div>
 
-
-          {/* ML Lab nav */}
-          <div className="np-sidebar-nav-links" style={{ marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Link
-              to="/ml-lab"
-              className="np-sans"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '9px 12px', borderRadius: 4,
-                background: 'var(--bg-panel)', color: 'var(--fg)',
-                border: '1px solid var(--border-strong)',
-                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
-                textDecoration: 'none', cursor: 'pointer',
-                transition: 'border-color .15s',
-              }}
-            >
-              <span style={{ color: 'var(--accent)' }}>⚗</span>
-              <span>{lang === 'ar' ? 'مختبر ML' : 'ML Lab'}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
-            </Link>
-            <Link
-              to="/theory"
-              className="np-sans"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '9px 12px', borderRadius: 4,
-                background: 'var(--bg-panel)', color: 'var(--fg)',
-                border: '1px solid var(--border-strong)',
-                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
-                textDecoration: 'none', cursor: 'pointer',
-              }}
-            >
-              <span style={{ color: 'var(--accent)' }}>📖</span>
-              <span>{lang === 'ar' ? 'المحاضرات' : 'Theory'}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
-            </Link>
-          </div>
-
-          {/* Theme + Lang toggles */}
-          <div className='np-sidebar-toggles' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 20 }}>
-            <button
-              onClick={toggleTheme}
-              className="np-sans"
-              style={{
-                padding: '8px 10px', background: 'var(--bg-panel)', color: 'var(--fg)',
-                border: '1px solid var(--border-strong)',
-                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
-                cursor: 'pointer', borderRadius: 3,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}
-            >
-              <span>{isLight ? '☀' : '☾'}</span>
-              <span>{isLight ? t.light : t.dark}</span>
+          <div className="control-cluster desktop-only" style={{ justifyContent: 'space-between' }}>
+            <button className="icon-button" type="button" onClick={toggleTheme} aria-label={isRTL ? 'تبديل المظهر' : 'Toggle theme'}>
+              {isLight ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
             </button>
-            <button
-              onClick={toggleLang}
-              className="np-sans"
-              style={{
-                padding: '8px 10px', background: 'var(--bg-panel)', color: 'var(--fg)',
-                border: '1px solid var(--border-strong)',
-                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
-                cursor: 'pointer', borderRadius: 3,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}
-            >
-              <span>⟳</span>
-              <span>{t.langToggle}</span>
+            <button className="icon-button" type="button" onClick={toggleLang} aria-label={isRTL ? 'تبديل اللغة' : 'Toggle language'}>
+              <Languages aria-hidden="true" />
             </button>
-          </div>
-
-          {/* Nav */}
-          <SidebarLabel text={t.algorithms} />
-          <div className="np-sidebar-algo-grid" style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {ALGOS.map((a) => {
-              const active = a.key === algo;
-              return (
-                <button
-                  key={a.key}
-                  onClick={() => handleAlgoChange(a.key)}
-                  className="np-sans"
-                  style={{
-                    textAlign: 'start', padding: '10px 12px',
-                    background: active ? 'var(--accent-soft)' : 'transparent',
-                    border: '1px solid ' + (active ? 'var(--border-accent)' : 'var(--border)'),
-                    borderInlineStart: active ? '2.5px solid var(--accent)' : '1px solid var(--border)',
-                    color: active ? 'var(--fg-strong)' : 'var(--fg-muted)',
-                    fontSize: 11.5, letterSpacing: 0.5, fontWeight: active ? 700 : 500,
-                    cursor: 'pointer', borderRadius: 3,
-                    boxShadow: active ? 'var(--shadow-glow)' : 'none',
-                    transition: 'all 180ms',
-                  }}
-                >
-                  {algoLabel[a.key]}
-                </button>
-              );
-            })}
-          </div>
-
-          <div style={{ height: 20 }} />
-          <div className='np-sidebar-stats'><SidebarLabel text={t.liveStats} />
-          <div style={{ marginTop: 8 }}>
-            <MiniStatRow label={t.statAlgorithm} value={algo} highlight />
-            <MiniStatRow label={t.statExplored} value={`${sidebarStats.explored}/${sidebarStats.total}`} />
-            <MiniStatRow label={t.statPath} value={String(sidebarStats.pathLen)} />
-            <MiniStatRow label={t.statStatus} value={statusText} />
-          </div>
-          </div>
-
-          <div style={{ height: 20 }} />
-          <SidebarLabel text={t.gridVisualizer} />
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="np-sans"
-            style={{
-              marginTop: 10, width: '100%', padding: '11px 12px',
-              background: 'var(--accent)', color: 'var(--accent-fg)', border: '1px solid var(--accent)',
-              fontSize: 11, letterSpacing: 2, textTransform: 'uppercase',
-              cursor: 'pointer', borderRadius: 3, fontWeight: 700,
-              boxShadow: 'var(--shadow-glow)', transition: 'all 160ms',
-            }}
-          >
-            {t.openGrid}
-          </button>
-          <div className="np-sans" style={{ marginTop: 8, fontSize: 10, color: 'var(--fg-dim)', letterSpacing: 0.3, lineHeight: 1.5 }}>
-            {t.gridHint}
-          </div>
-
-          <div style={{ height: 24 }} />
-          <div className="np-mono" style={{ fontSize: 9, letterSpacing: 1.5, color: 'var(--fg-faint)', textTransform: 'uppercase' }}>
-            <div>Σ BFS · DFS · Greedy · Hill</div>
-            <div style={{ marginTop: 4 }}>H(n) = Manhattan</div>
+            <button className="primary-button" type="button" onClick={() => setDrawerOpen(true)} style={{ flex: 1 }}>
+              <Grid3X3 size={16} aria-hidden="true" /> {t.openGrid.replace('▶ ', '')}
+            </button>
           </div>
         </aside>
 
-        {/* ========== MAIN ========== */}
-        <main style={{ margin: '16px 16px 16px 0', padding: '32px 36px 64px', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', boxShadow: '0 25px 60px rgba(0,0,0,0.7)', maxWidth: 1200, width: 'calc(100% - 16px)' }}>
-          {/* Top strip */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
+        <main className="premium-main">
+          <section className="glass-card workspace-hero np-fade-in">
             <div>
-              <div className="np-mono" style={{ fontSize: 10, letterSpacing: 2.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 500 }}>{t.interactiveLearning}</div>
-              <h1 className="np-sans" style={{ margin: '8px 0 0', fontSize: 26, letterSpacing: 0.3, color: 'var(--fg-strong)', fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}>
-                {algoLabel[algo]}
-              </h1>
-              <div className="np-sans" style={{ marginTop: 6, fontSize: 11, color: 'var(--fg-dim)', letterSpacing: 0.3 }}>
-                {lang === 'ar' ? 'بواسطة' : 'by'} <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--fg)', textDecoration: 'none', fontWeight: 700, borderBottom: '1px dashed var(--border-strong)' }}>{displayedAuthor}</a>
+              <span className="eyebrow"><span>{t.interactiveLearning.replace('// ', '')}</span></span>
+              <h1 className="hero-title">{algoLabel[algo]}</h1>
+              <p className="hero-description">{content.description[0]}</p>
+              <div className="hero-actions">
+                <button className="primary-button" type="button" onClick={handleGraphPlay}>
+                  <Play size={16} aria-hidden="true" /> {t.btnRun.replace('▶ ', '')}
+                </button>
+                <button className="ghost-button" type="button" onClick={handleNewGraph}>
+                  <RotateCcw size={16} aria-hidden="true" /> {t.btnNewGraph.replace('⟳ ', '')}
+                </button>
+                <button className="ghost-button" type="button" onClick={() => setDrawerOpen(true)}>
+                  <PanelRightOpen size={16} aria-hidden="true" /> {t.openGrid.replace('▶ ', '')}
+                </button>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ width: 8, height: 8, background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 8px var(--accent-glow)' }} />
-              <span className="np-sans" style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--fg-muted)', textTransform: 'uppercase', fontWeight: 600 }}>{t.runtimeOnline}</span>
+            <div className="hero-status-card">
+              <div className="status-orbit">
+                <div className="status-orbit-value">
+                  <strong>{sidebarStats.explored}</strong>
+                  <span>{t.statExplored}</span>
+                </div>
+              </div>
+              <div className="telemetry-list" style={{ marginTop: 16 }}>
+                <MiniStatRow label="Runtime" value={t.runtimeOnline} highlight />
+                <MiniStatRow label="Frontier" value={graphTrace.frontierLabel} />
+                <MiniStatRow label="Heuristic" value={algo === 'BFS' || algo === 'DFS' ? 'Uninformed' : 'Manhattan'} />
+              </div>
             </div>
-          </div>
+          </section>
+
+          <section className="metric-grid" aria-label={isRTL ? 'مؤشرات الخوارزمية' : 'Algorithm metrics'}>
+            <MetricCard icon={<Gauge aria-hidden="true" />} label={t.propTime} value={content.properties.time} sub={currentAlgoMeta.short} />
+            <MetricCard icon={<Route aria-hidden="true" />} label={t.propSpace} value={content.properties.space} sub={t.propSpace} />
+            <MetricCard icon={<Sparkles aria-hidden="true" />} label={t.propOptimal} value={content.properties.optimal} sub={t.propOptimal} />
+            <MetricCard icon={<Network aria-hidden="true" />} label={t.statPath} value={String(currentPathLen)} sub={t.sectionGraph} />
+          </section>
 
           <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 200ms ease' }}>
-            {/* ===== Section 1: Explanation ===== */}
-            <SectionBar index="01" title={t.sectionExplanation} />
-            <div className="np-glass" style={{ padding: 24, marginTop: 14, borderRadius: 4 }}>
-              <div className="np-explain-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 230px', gap: 28 }}>
-                <div>
-                  {content.description.map((p, i) => (
-                    <p key={i} className="np-sans" style={{
-                      margin: i === 0 ? '0 0 12px' : '12px 0 0',
-                      color: 'var(--fg)', fontSize: 14.5, lineHeight: 1.8, letterSpacing: 0.1,
-                      fontWeight: 400,
-                    }}>
-                      {p}
-                    </p>
-                  ))}
-
-                  <Divider />
-                  <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div className="bento-grid">
+              <div className="bento-stack">
+                <section className="glass-card card-pad">
+                  <div className="section-heading">
+                    <div className="section-title-group">
+                      <div className="section-kicker">01 · {t.sectionExplanation}</div>
+                      <h2 className="section-title">{isRTL ? 'منطق البحث وسلوك الخوارزمية' : 'Search logic and algorithm behavior'}</h2>
+                    </div>
+                    <TerminalSquare aria-hidden="true" color="var(--fg-dim)" />
+                  </div>
+                  <div className="rich-copy">
+                    {content.description.map((p, i) => <p key={i}>{p}</p>)}
+                  </div>
+                  <div className="badge-grid">
                     <Badge label={t.propComplete} value={content.properties.complete} />
                     <Badge label={t.propOptimal} value={content.properties.optimal} />
                     <Badge label={t.propTime} value={content.properties.time} mono />
                     <Badge label={t.propSpace} value={content.properties.space} mono />
                   </div>
-                </div>
+                </section>
 
-                <div>
-                  <SidebarLabel text={t.controlFlow} />
+                <section className="glass-card card-pad">
+                  <div className="section-heading">
+                    <div className="section-title-group">
+                      <div className="section-kicker">03 · {t.sectionGraph}</div>
+                      <h2 className="section-title">{isRTL ? 'محطة تتبع الرسم البياني' : 'Graph traversal workstation'}</h2>
+                    </div>
+                  </div>
+                  <GraphView
+                    graph={graph}
+                    trace={graphTrace}
+                    gStepIdx={gStepIdx}
+                    gPathIdx={gPathIdx}
+                    running={gRunning}
+                    speed={gSpeed}
+                    onPlay={handleGraphPlay}
+                    onPause={handleGraphPause}
+                    onReset={handleGraphReset}
+                    onNewGraph={handleNewGraph}
+                    onSpeedChange={setGSpeed}
+                    t={t}
+                  />
+                </section>
+
+                <section className="code-shell glass-card glass-card--flat">
+                  <div className="code-toolbar">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span className="window-dots"><span /><span /><span /></span>
+                      <span className="code-name">{algo.toLowerCase()}.py</span>
+                    </div>
+                    <button onClick={handleCopy} type="button" className={`copy-button${copied ? ' is-success' : ''}`}>
+                      {copied ? t.copied : t.copy}
+                    </button>
+                  </div>
+                  <CodeBlock code={content.python} />
+                </section>
+              </div>
+
+              <aside className="bento-stack">
+                <section className="glass-card card-pad">
+                  <div className="section-heading">
+                    <div className="section-title-group">
+                      <div className="section-kicker">02 · {t.controlFlow}</div>
+                      <h2 className="section-title">{isRTL ? 'مسار القرار' : 'Decision path'}</h2>
+                    </div>
+                  </div>
                   <FlowDiagram steps={content.flow} />
-                </div>
-              </div>
-            </div>
+                </section>
 
-            {/* ===== Section 2: Python Code ===== */}
-            <div style={{ height: 28 }} />
-            <SectionBar index="02" title={t.sectionPython} />
-            <div className="np-glass" style={{ marginTop: 14, borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '11px 14px', borderBottom: '1px solid var(--border)',
-                background: 'var(--bg-elevated)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ display: 'inline-flex', gap: 5 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--border-strong)' }} />
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--border-strong)', opacity: 0.7 }} />
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--border-strong)', opacity: 0.4 }} />
-                  </span>
-                  <span className="np-mono" style={{ fontSize: 11, letterSpacing: 1, color: 'var(--fg-muted)', fontWeight: 600 }}>{algo.toLowerCase()}.py</span>
-                </div>
-                <button
-                  onClick={handleCopy}
-                  className="np-sans"
-                  style={{
-                    padding: '6px 12px', background: copied ? 'var(--accent)' : 'var(--bg-panel)',
-                    color: copied ? 'var(--accent-fg)' : 'var(--fg)',
-                    border: '1px solid ' + (copied ? 'var(--accent)' : 'var(--border-strong)'),
-                    fontSize: 10, letterSpacing: 1, fontWeight: 600,
-                    cursor: 'pointer', borderRadius: 3, transition: 'all 140ms',
-                  }}
-                >
-                  {copied ? t.copied : t.copy}
-                </button>
-              </div>
-              <CodeBlock code={content.python} />
-            </div>
+                <section className="glass-card card-pad">
+                  <SidebarLabel text={t.telemetry} />
+                  <div className="telemetry-list">
+                    <StatRowCompact label={t.tStatus} value={<StatusPill status={gridRun.status} labels={pillLabels} />} />
+                    <StatRowCompact label={t.tExplored} value={<Numeric n={gridExplored} />} />
+                    <StatRowCompact label={t.tPath} value={<Numeric n={gridRun.snap && gridRun.snap.found ? Math.min(gridRun.pathIdx, gridRun.snap.path.length) : 0} />} />
+                    <StatRowCompact label={t.speed} value={<span className="numeric-value">{gridSpeed}ms</span>} />
+                  </div>
+                  <Divider />
+                  <p className="section-description">{t.gridHint}</p>
+                  <button className="primary-button" type="button" onClick={() => setDrawerOpen(true)} style={{ width: '100%', marginTop: 16 }}>
+                    <Grid3X3 size={16} aria-hidden="true" /> {t.openGrid.replace('▶ ', '')}
+                  </button>
+                </section>
 
-            {/* ===== Section 3: Graph traversal ===== */}
-            <div style={{ height: 28 }} />
-            <SectionBar index="03" title={t.sectionGraph} />
-            <GraphView
-              graph={graph}
-              trace={graphTrace}
-              gStepIdx={gStepIdx}
-              gPathIdx={gPathIdx}
-              running={gRunning}
-              speed={gSpeed}
-              onPlay={handleGraphPlay}
-              onPause={handleGraphPause}
-              onReset={handleGraphReset}
-              onNewGraph={handleNewGraph}
-              onSpeedChange={setGSpeed}
-              t={t}
-            />
-
-            {/* Footer */}
-            <div className="np-sans" style={{
-              marginTop: 44, padding: '18px 0 0',
-              borderTop: '1px solid var(--border)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              color: 'var(--fg-dim)', fontSize: 10.5, letterSpacing: 0.3,
-              flexWrap: 'wrap', gap: 14,
-            }}>
-              <span>{t.footerLeft}</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                © {new Date().getFullYear()} <strong style={{ color: 'var(--fg)', fontWeight: 700 }}>{displayedAuthor}</strong>
-              </span>
-              <span>{t.footerRight}</span>
+                <section className="glass-card card-pad">
+                  <SidebarLabel text={isRTL ? 'إشارات النظام' : 'System signals'} />
+                  <div className="telemetry-list">
+                    <MiniStatRow label="Σ" value="BFS · DFS · GBFS · A*" />
+                    <MiniStatRow label="h(n)" value="Manhattan" />
+                    <MiniStatRow label="Grid" value={`${ROWS}×${COLS}`} />
+                    <MiniStatRow label="Mode" value="Deterministic trace" />
+                  </div>
+                </section>
+              </aside>
             </div>
           </div>
+
+          <footer className="footer-strip">
+            <span>{t.footerLeft}</span>
+            <span>© {new Date().getFullYear()} <strong style={{ color: 'var(--fg)' }}>{displayedAuthor}</strong></span>
+            <span>{t.footerRight}</span>
+          </footer>
         </main>
       </div>
 
-      {/* ========== GRID DRAWER ========== */}
-      <div
-        onClick={() => setDrawerOpen(false)}
-        style={{
-          position: 'fixed', inset: 0, background: isLight ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.55)',
-          opacity: drawerOpen ? 1 : 0, pointerEvents: drawerOpen ? 'auto' : 'none',
-          transition: 'opacity 260ms ease', zIndex: 40,
-        }}
-      />
-      <div
-        className={`np-drawer ${drawerOpen ? 'np-drawer-open' : ''}`}
-        style={{
-          position: 'fixed', top: 0,
-          insetInlineEnd: 0,
-          bottom: 0, width: 'min(520px, 100vw)',
-          background: 'var(--bg-alt)',
-          borderInlineStart: '1px solid var(--border)',
-          transform: drawerOpen ? 'translateX(0)' : `translateX(${isRTL ? '-100%' : '100%'})`,
-          transition: 'transform 320ms cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: drawerOpen ? 'var(--shadow-panel)' : 'none',
-          zIndex: 50, display: 'flex', flexDirection: 'column',
-        }}
-      >
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Grid visualizer drawer */}
+      <div onClick={() => setDrawerOpen(false)} className={`drawer-backdrop${drawerOpen ? ' is-open' : ' is-closed'}`} />
+      <section className={`grid-drawer${drawerOpen ? ' is-open' : ''}`} aria-hidden={!drawerOpen} aria-label={t.drawerTitle}>
+        <div className="drawer-header">
           <div>
-            <div className="np-mono" style={{ fontSize: 10, letterSpacing: 2, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 500 }}>{t.drawerTitle}</div>
-            <div className="np-sans" style={{ fontSize: 14, letterSpacing: 0.3, color: 'var(--fg-strong)', fontWeight: 700, marginTop: 3 }}>{algoLabel[algo]} · 12 × 12</div>
+            <div className="section-kicker">{t.drawerTitle.replace('// ', '')}</div>
+            <h2 className="section-title" style={{ marginTop: 4, fontSize: 20 }}>{algoLabel[algo]} · {ROWS} × {COLS}</h2>
           </div>
-          <button
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              width: 32, height: 32, background: 'transparent', border: '1px solid var(--border-strong)',
-              color: 'var(--fg)', cursor: 'pointer', borderRadius: 3, fontSize: 14,
-            }}
-          >✕</button>
+          <button className="icon-button" type="button" onClick={() => setDrawerOpen(false)} aria-label={isRTL ? 'إغلاق' : 'Close'}>
+            <X aria-hidden="true" />
+          </button>
         </div>
 
-        <div className="np-scroll" style={{ padding: 18, overflowY: 'auto', flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${COLS}, ${cellSize}px)`,
-                gridTemplateRows: `repeat(${ROWS}, ${cellSize}px)`,
-                gap: 3, padding: 10,
-                background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 4,
-                direction: 'ltr',
-              }}
-            >
+        <div className="drawer-body np-scroll">
+          <div className="grid-stage">
+            <div className="grid-board" style={{ gridTemplateColumns: `repeat(${COLS}, ${cellSize})`, gridTemplateRows: `repeat(${ROWS}, ${cellSize})` }}>
               {grid.map((row, r) => row.map((cell, c) => {
                 const isStart = r === start.r && c === start.c;
                 const isGoal = r === goal.r && c === goal.c;
@@ -673,25 +620,25 @@ export default function Index() {
                 const isVisited = cell.visitOrder >= 0 && cell.visitOrder < gridRun.stepIdx;
                 const isPath = cell.pathOrder >= 0 && cell.pathOrder < gridRun.pathIdx;
 
-                let bg = 'var(--bg-panel)';
+                let bg = 'rgba(255,255,255,0.035)';
                 let border = '1px solid var(--border)';
                 let shadow = 'none';
                 let animation: string | undefined;
-                let cellContent: React.ReactNode = null;
+                let cellContent: ReactNode = null;
 
                 if (isWall) { bg = 'var(--wall)'; border = '1px solid var(--border)'; }
                 else if (isPath) { bg = 'var(--path)'; border = '1px solid var(--path)'; animation = 'np-path-pulse 1.4s ease-in-out infinite'; }
                 else if (isVisited) {
                   bg = 'var(--visited)'; border = '1px solid var(--visited-border)';
-                  shadow = '0 0 6px var(--accent-glow)';
+                  shadow = '0 0 18px var(--accent-glow)';
                   animation = 'np-ripple 260ms ease-out both';
                 }
                 if (isStart) {
                   bg = 'var(--accent-soft)'; border = '1px solid var(--accent)'; animation = 'np-start-pulse 1.6s ease-in-out infinite';
-                  cellContent = <span style={{ color: 'var(--fg-strong)', fontSize: 10, fontWeight: 800 }}>S</span>;
+                  cellContent = <span style={{ color: 'var(--fg-strong)', fontSize: 10, fontWeight: 900 }}>S</span>;
                 } else if (isGoal) {
-                  bg = 'transparent'; border = '1px solid var(--accent)'; shadow = '0 0 8px var(--accent-glow)';
-                  cellContent = <span style={{ width: 10, height: 10, background: 'var(--accent)', transform: 'rotate(45deg)', display: 'inline-block' }} />;
+                  bg = 'transparent'; border = '1px solid var(--accent)'; shadow = '0 0 18px var(--accent-glow)';
+                  cellContent = <span style={{ width: 9, height: 9, background: 'var(--accent)', transform: 'rotate(45deg)', display: 'inline-block', borderRadius: 2 }} />;
                 }
 
                 const delay = isVisited && cell.visitOrder >= 0 ? Math.min(cell.visitOrder * 6, 300)
@@ -700,16 +647,23 @@ export default function Index() {
                 return (
                   <div
                     key={`${r}-${c}`}
+                    className="grid-cell"
                     onMouseDown={() => handleCellDown(r, c)}
                     onMouseEnter={() => handleCellEnter(r, c)}
+                    role="button"
+                    aria-label={`${r}, ${c}`}
+                    tabIndex={gridRun.running || isStart || isGoal ? -1 : 0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleCellDown(r, c); }}
                     style={{
-                      width: cellSize, height: cellSize, background: bg, border,
-                      boxShadow: shadow, borderRadius: 2,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      animation, animationDelay: `${delay}ms`,
-                      userSelect: 'none',
-                      cursor: isStart || isGoal ? 'grab' : 'crosshair',
-                      transition: 'background 120ms, border-color 120ms, box-shadow 120ms',
+                      width: cellSize,
+                      height: cellSize,
+                      background: bg,
+                      border,
+                      boxShadow: shadow,
+                      animation,
+                      animationDelay: `${delay}ms`,
+                      cursor: isStart || isGoal ? 'default' : 'crosshair',
+                      color: isPath ? 'var(--accent-fg)' : 'var(--fg-strong)',
                     }}
                   >{cellContent}</div>
                 );
@@ -717,76 +671,56 @@ export default function Index() {
             </div>
           </div>
 
-          <div style={{ height: 14 }} />
           <Legend title={t.legend} items={legendItems} />
 
-          <div style={{ height: 14 }} />
-          <div className="np-glass" style={{ padding: 14, borderRadius: 4 }}>
+          <div className="glass-card drawer-section">
             <SidebarLabel text={t.controls} />
-            <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
-              <GhostButton label={gridRun.running ? t.btnPause : t.btnPlay} solid={!gridRun.running} onClick={() => (gridRun.running ? setGridRun(r => ({ ...r, running: false })) : playGrid())} />
+            <div className="drawer-controls">
+              <GhostButton label={gridRun.running ? t.btnPause : t.btnPlay} solid={!gridRun.running} onClick={toggleGridPlayback} />
               <GhostButton label={t.btnReset} onClick={resetGrid} />
               <GhostButton label={t.btnRandom} onClick={randomizeGrid} />
               <GhostButton label={t.btnClear} onClick={() => { setGrid(makeEmptyGrid()); resetGrid(); }} />
             </div>
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 16 }}>
               <LabelRow label={t.speed} value={`${gridSpeed}ms`} />
-              <input className="np-range" type="range" min={10} max={300} step={5} value={gridSpeed} onChange={(e) => setGridSpeed(Number(e.target.value))} style={{ width: '100%' }} />
+              <input className="np-range" type="range" min={10} max={300} step={5} value={gridSpeed} onChange={(e) => setGridSpeed(Number(e.target.value))} />
             </div>
           </div>
 
-          <div style={{ height: 14 }} />
-          <div className="np-glass" style={{ padding: 14, borderRadius: 4 }}>
+          <div className="glass-card drawer-section">
             <SidebarLabel text={t.telemetry} />
-            <StatRowCompact label={t.tStatus} value={<StatusPill status={gridRun.status} labels={pillLabels} />} />
-            <StatRowCompact label={t.tExplored} value={<Numeric n={gridRun.snap ? Math.min(gridRun.stepIdx, gridRun.snap.visitedOrder.length) : 0} />} />
-            <StatRowCompact label={t.tPath} value={<Numeric n={gridRun.snap && gridRun.snap.found ? Math.min(gridRun.pathIdx, gridRun.snap.path.length) : 0} />} />
+            <div className="telemetry-list">
+              <StatRowCompact label={t.tStatus} value={<StatusPill status={gridRun.status} labels={pillLabels} />} />
+              <StatRowCompact label={t.tExplored} value={<Numeric n={gridRun.snap ? Math.min(gridRun.stepIdx, gridRun.snap.visitedOrder.length) : 0} />} />
+              <StatRowCompact label={t.tPath} value={<Numeric n={gridRun.snap && gridRun.snap.found ? Math.min(gridRun.pathIdx, gridRun.snap.path.length) : 0} />} />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Responsive */}
-      <style>{`
-        @media (max-width: 960px) {
-          .np-shell { grid-template-columns: 1fr !important; }
-          .np-sidebar { position: static !important; height: auto !important; }
-          .np-explain-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 720px) {
-          .np-graph-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+      </section>
     </div>
   );
 }
 
-function SocialLink({ href, label, icon }: { href: string; label: string; icon: string }) {
+function MetricCard({ icon, label, value, sub }: { icon: ReactNode; label: string; value: string; sub?: string }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="np-sans"
-      style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-        padding: '7px 4px', borderRadius: 3,
-        background: 'var(--bg-elevated)',
-        border: '1px solid var(--border)',
-        color: 'var(--fg)', textDecoration: 'none',
-        fontSize: 9, letterSpacing: 0.3, fontWeight: 600,
-        transition: 'all 150ms',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.background = 'var(--accent-soft)';
-        (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border-accent)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-elevated)';
-        (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border)';
-      }}
-    >
-      <span style={{ fontSize: 14, color: 'var(--fg-strong)' }}>{icon}</span>
-      <span style={{ fontSize: 9 }}>{label}</span>
+    <div className="metric-card glass-card">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <span className="metric-label">{label}</span>
+        <span style={{ color: 'var(--fg-dim)', display: 'inline-flex' }}>{icon}</span>
+      </div>
+      <div>
+        <div className="metric-value">{value}</div>
+        {sub && <div className="metric-sub">{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
+function SocialLink({ href, label, children }: { href: string; label: string; children: ReactNode }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="social-link" aria-label={label} title={label}>
+      {children}
+      <span>{label}</span>
     </a>
   );
 }

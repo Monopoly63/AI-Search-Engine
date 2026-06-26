@@ -45,96 +45,107 @@ export function GraphView(props: {
     trace.frontierLabel === 'STACK' ? t.hintStack : t.hintPriority;
 
   return (
-    <div className="np-graph-grid" style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 260px', gap: 16 }}>
-      <div className="np-glass" style={{ padding: 16, borderRadius: 4 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span className="np-sans" style={{ fontSize: 10, letterSpacing: 2.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Graph</span>
-          <span className="np-mono" style={{ fontSize: 10, letterSpacing: 1, color: 'var(--fg-faint)' }}>{t.graphNodes} {graph.nodes.length} · {t.graphEdges} {graph.edges.length}</span>
+    <div className="graph-workstation">
+      <div className="glass-card graph-canvas-card">
+        <div className="graph-toolbar">
+          <div>
+            <div className="section-kicker">Traversal graph</div>
+            <div className="graph-meta" style={{ marginTop: 6 }}>
+              <span>{t.graphNodes} {graph.nodes.length}</span>
+              <span>·</span>
+              <span>{t.graphEdges} {graph.edges.length}</span>
+            </div>
+          </div>
+          <StatusPill status={statusKey} labels={pillLabels} />
         </div>
-        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" style={{ display: 'block', background: 'transparent', direction: 'ltr' }}>
-          <defs>
-            <filter id="np-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="b" />
-              <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-          </defs>
-          {graph.edges.map((e, i) => {
-            const a = graph.nodes[e.a], b = graph.nodes[e.b];
-            const k = e.a < e.b ? `${e.a}-${e.b}` : `${e.b}-${e.a}`;
-            const onPath = pathEdgeSet.has(k);
-            const bothVisited = visitedSet.has(e.a) && visitedSet.has(e.b);
-            const stroke = onPath ? 'var(--accent)' : bothVisited ? 'var(--border-accent)' : 'var(--border)';
-            const width = onPath ? 2.6 : 1.2;
-            return <line key={i} x1={a.x * W} y1={a.y * H} x2={b.x * W} y2={b.y * H} stroke={stroke} strokeWidth={width} filter={onPath ? 'url(#np-glow-filter)' : undefined} style={{ transition: 'stroke 240ms, stroke-width 240ms' }} />;
-          })}
-          {graph.nodes.map((n) => {
-            const isStart = n.id === graph.start; const isGoal = n.id === graph.goal;
-            const isCurrent = n.id === currentId;
-            const isVisited = visitedSet.has(n.id); const isOnPath = pathNodeSet.has(n.id);
-            const r = isCurrent ? 17 : 15;
-            let fill = 'var(--bg-panel)'; let stroke = 'var(--border-strong)'; let strokeW = 1.4;
-            let textFill = 'var(--fg-muted)';
-            if (isVisited) { fill = 'var(--visited)'; stroke = 'var(--visited-border)'; textFill = 'var(--fg-strong)'; }
-            if (isOnPath) { fill = 'var(--path)'; stroke = 'var(--path)'; textFill = 'var(--accent-fg)'; }
-            if (isStart || isGoal) { stroke = 'var(--accent)'; strokeW = 2.2; }
-            return (
-              <g key={n.id}>
-                {isCurrent && <circle cx={n.x * W} cy={n.y * H} r={r + 8} fill="none" stroke="var(--border-accent)" strokeWidth={1.4} style={{ animation: 'np-start-pulse 1.2s ease-in-out infinite' }} />}
-                <circle cx={n.x * W} cy={n.y * H} r={r} fill={fill} stroke={stroke} strokeWidth={strokeW} filter={isCurrent || isOnPath ? 'url(#np-glow-filter)' : undefined} style={{ transition: 'fill 240ms, stroke 240ms' }} />
-                <text x={n.x * W} y={n.y * H + 4} textAnchor="middle" fontFamily="'JetBrains Mono', monospace" fontSize={11} fontWeight={700} letterSpacing={1} fill={textFill} style={{ pointerEvents: 'none', transition: 'fill 240ms' }}>{n.label}</text>
-                {(isStart || isGoal) && (
-                  <text x={n.x * W} y={n.y * H - r - 8} textAnchor="middle" fontFamily="'JetBrains Mono', monospace" fontSize={8.5} fontWeight={700} letterSpacing={2} fill="var(--fg-strong)">{isStart ? t.legStart.toUpperCase() : t.legGoal.toUpperCase()}</text>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+
+        <div className="graph-svg-wrap">
+          <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" style={{ display: 'block', direction: 'ltr' }}>
+            <defs>
+              <filter id="np-premium-glow" x="-70%" y="-70%" width="240%" height="240%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <radialGradient id="node-sheen" cx="35%" cy="24%" r="70%">
+                <stop offset="0%" stopColor="rgba(255,255,255,.18)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,.02)" />
+              </radialGradient>
+            </defs>
+            {graph.edges.map((e, i) => {
+              const a = graph.nodes[e.a], b = graph.nodes[e.b];
+              const k = e.a < e.b ? `${e.a}-${e.b}` : `${e.b}-${e.a}`;
+              const onPath = pathEdgeSet.has(k);
+              const bothVisited = visitedSet.has(e.a) && visitedSet.has(e.b);
+              const stroke = onPath ? 'var(--accent)' : bothVisited ? 'var(--visited-border)' : 'var(--border)';
+              const width = onPath ? 3 : bothVisited ? 1.8 : 1.1;
+              return <line key={i} x1={a.x * W} y1={a.y * H} x2={b.x * W} y2={b.y * H} stroke={stroke} strokeWidth={width} strokeLinecap="round" filter={onPath ? 'url(#np-premium-glow)' : undefined} style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }} />;
+            })}
+            {graph.nodes.map((n) => {
+              const isStart = n.id === graph.start; const isGoal = n.id === graph.goal;
+              const isCurrent = n.id === currentId;
+              const isVisited = visitedSet.has(n.id); const isOnPath = pathNodeSet.has(n.id);
+              const r = isCurrent ? 18 : 15;
+              let fill = 'rgba(255,255,255,0.045)'; let stroke = 'var(--border-strong)'; let strokeW = 1.25;
+              let textFill = 'var(--fg-muted)';
+              if (isVisited) { fill = 'var(--visited)'; stroke = 'var(--visited-border)'; textFill = 'var(--fg-strong)'; }
+              if (isOnPath) { fill = 'var(--path)'; stroke = 'var(--path)'; textFill = 'var(--accent-fg)'; }
+              if (isStart || isGoal) { stroke = 'var(--accent)'; strokeW = 2.2; }
+              return (
+                <g key={n.id}>
+                  {isCurrent && <circle cx={n.x * W} cy={n.y * H} r={r + 10} fill="none" stroke="var(--border-accent)" strokeWidth={1.2} style={{ animation: 'np-start-pulse 1.35s ease-in-out infinite' }} />}
+                  <circle cx={n.x * W} cy={n.y * H} r={r} fill={fill} stroke={stroke} strokeWidth={strokeW} filter={isCurrent || isOnPath ? 'url(#np-premium-glow)' : undefined} style={{ transition: 'fill 240ms ease, stroke 240ms ease, r 240ms ease' }} />
+                  <circle cx={n.x * W - 4} cy={n.y * H - 5} r={Math.max(2, r * .2)} fill="rgba(255,255,255,.16)" opacity={isOnPath ? .32 : .7} />
+                  <text x={n.x * W} y={n.y * H + 4} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={11} fontWeight={800} fill={textFill} style={{ pointerEvents: 'none', transition: 'fill 240ms ease' }}>{n.label}</text>
+                  {(isStart || isGoal) && (
+                    <text x={n.x * W} y={n.y * H - r - 10} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={8.5} fontWeight={800} letterSpacing={2} fill="var(--fg-strong)">{isStart ? t.legStart.toUpperCase() : t.legGoal.toUpperCase()}</text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="graph-controls">
           <GhostButton label={running ? t.btnPause : t.btnRun} solid={!running} onClick={() => (running ? props.onPause() : props.onPlay())} />
           <GhostButton label={t.btnReset} onClick={props.onReset} />
           <GhostButton label={t.btnNewGraph} onClick={props.onNewGraph} />
-          <div style={{ marginInlineStart: 'auto', display: 'flex', alignItems: 'center', gap: 10, minWidth: 200, direction: 'ltr' }}>
-            <span className="np-sans" style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--fg-dim)', textTransform: 'uppercase', fontWeight: 600 }}>{t.speed}</span>
-            <input className="np-range" type="range" min={80} max={1500} step={20} value={speed} onChange={(e) => props.onSpeedChange(Number(e.target.value))} style={{ flex: 1 }} />
-            <span className="np-mono" style={{ fontSize: 10.5, color: 'var(--fg)', fontVariantNumeric: 'tabular-nums', minWidth: 48, textAlign: 'end', fontWeight: 600 }}>{speed}ms</span>
-          </div>
+          <label className="speed-control">
+            <span>{t.speed}</span>
+            <input className="np-range" type="range" min={80} max={1500} step={20} value={speed} onChange={(e) => props.onSpeedChange(Number(e.target.value))} />
+            <output>{speed}ms</output>
+          </label>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-        <div className="np-glass" style={{ padding: 14, borderRadius: 4 }}>
+      <div className="graph-side">
+        <div className="glass-card card-pad">
           <SidebarLabel text={frontierTitle} />
-          <div className="np-scroll" style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
+          <div className="frontier-list np-scroll">
             {frontier.length === 0 ? (
-              <div className="np-sans" style={{ fontSize: 10, color: 'var(--fg-faint)', letterSpacing: 1, padding: '6px 2px' }}>{t.empty}</div>
+              <div className="empty-state">{t.empty}</div>
             ) : frontier.map((id, i) => (
-              <div key={`${id}-${i}`} className="np-mono" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px',
-                background: i === 0 ? 'var(--accent-soft)' : 'var(--bg-panel)',
-                border: `1px solid ${i === 0 ? 'var(--border-accent)' : 'var(--border)'}`,
-                borderRadius: 3, fontSize: 11, letterSpacing: 1, color: 'var(--fg-strong)', fontWeight: 600,
-              }}>
-                <span style={{ color: 'var(--fg-faint)', fontSize: 9 }}>{String(i).padStart(2, '0')}</span>
+              <div key={`${id}-${i}`} className={`frontier-row${i === 0 ? ' is-next' : ''}`}>
+                <span>{String(i).padStart(2, '0')}</span>
                 <span>{graph.nodes[id]?.label ?? id}</span>
               </div>
             ))}
           </div>
-          <div className="np-sans" style={{ marginTop: 10, fontSize: 10, color: 'var(--fg-faint)', letterSpacing: 0.5, lineHeight: 1.5 }}>
-            {frontierHint}
-          </div>
+          <p className="section-description" style={{ marginTop: 12, fontSize: 12 }}>{frontierHint}</p>
         </div>
 
-        <div className="np-glass" style={{ padding: 14, borderRadius: 4 }}>
+        <div className="glass-card card-pad">
           <SidebarLabel text={t.telemetry} />
-          <StatRowCompact label={t.tStatus} value={<StatusPill status={statusKey} labels={pillLabels} />} />
-          <StatRowCompact label={t.tExplored} value={<Numeric n={Math.min(gStepIdx, stepTotal)} />} />
-          <StatRowCompact label={t.tPath} value={<Numeric n={trace.found ? Math.min(gPathIdx, pathTotal) : 0} />} />
-          <StatRowCompact label={t.tEfficiency} value={
-            <Numeric
-              n={trace.found && trace.finalPath.length > 0 && trace.steps.length > 0
-                ? Math.round((trace.finalPath.length / trace.steps.length) * 1000) / 10 : 0}
-              suffix="%" />
-          } />
+          <div className="telemetry-list">
+            <StatRowCompact label={t.tStatus} value={<StatusPill status={statusKey} labels={pillLabels} />} />
+            <StatRowCompact label={t.tExplored} value={<Numeric n={Math.min(gStepIdx, stepTotal)} />} />
+            <StatRowCompact label={t.tPath} value={<Numeric n={trace.found ? Math.min(gPathIdx, pathTotal) : 0} />} />
+            <StatRowCompact label={t.tEfficiency} value={
+              <Numeric
+                n={trace.found && trace.finalPath.length > 0 && trace.steps.length > 0
+                  ? Math.round((trace.finalPath.length / trace.steps.length) * 1000) / 10 : 0}
+                suffix="%" />
+            } />
+          </div>
         </div>
       </div>
     </div>

@@ -220,7 +220,7 @@ function Pill({label,value,sub}:{label:string;value:string;sub?:string}){
 function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
   const d=ML_DATA;
   const CLR=['var(--fg-strong)','var(--fg-dim)','var(--fg-muted)'];
-  const ISO=(v:number)=>v===-1?'#e05555':'var(--fg-muted)';
+  const ISO=(v:number)=>v===-1?'var(--danger)':'var(--fg-muted)';
 
   const title=(en:string,ar:string)=>isRTL?ar:en;
 
@@ -299,7 +299,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
     <div className="ml-chart-box" style={{paddingBottom:8}}>
       <BarChart data={d.decision_tree.importances}/>
     </div>
-    <div className="ml-insight-box">💡 overtime_hours explains 55.9% of all decisions — more than all other features combined.</div>
+    <div className="ml-insight-box">Insight — overtime_hours explains 55.9% of all decisions, more than all other features combined.</div>
     <CodeBlock code={CODES.dt}/>
   </div>;
 
@@ -313,7 +313,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
       <Pill label="Threshold" value="5%" sub="contamination"/>
     </div>
     <div className="ml-legend-row">
-      <span className="ml-legend-item"><span style={{background:'#e05555',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Outlier (−1)</span>
+      <span className="ml-legend-item"><span style={{background:'var(--danger)',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Outlier (−1)</span>
       <span className="ml-legend-item"><span style={{background:'var(--fg-muted)',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Normal (+1)</span>
     </div>
     <div className="ml-chart-box">
@@ -334,7 +334,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
     <div className="ml-chart-box" style={{paddingBottom:8}}>
       <BarChart data={d.random_forest.importances}/>
     </div>
-    <div className="ml-insight-box">💡 Model ranking: Random Forest R²=0.679 &gt; Linear Regression R²=0.558 — ensemble wins.</div>
+    <div className="ml-insight-box">Insight — model ranking: Random Forest R²=0.679 &gt; Linear Regression R²=0.558; the ensemble wins.</div>
     <CodeBlock code={CODES.rf}/>
   </div>;
 
@@ -360,7 +360,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
           { name: 'Random Forest (Tuned CV)', r2: '0.782', mse: '1.210', w: '78.2%', c: 'var(--accent-2)' },
           { name: 'Gradient Boosting GBDT', r2: '0.795', mse: '1.140', w: '79.5%', c: 'var(--accent-2)' },
           { name: 'Voting Ensemble (Avg)', r2: '0.806', mse: '1.080', w: '80.6%', c: 'var(--accent)' },
-          { name: 'Stacking Meta-Ensemble ⭐', r2: '0.814', mse: '1.025', w: '81.4%', c: '#10b981' },
+          { name: 'Stacking Meta-Ensemble', r2: '0.814', mse: '1.025', w: '81.4%', c: 'var(--success)' },
         ].map((row, idx) => (
           <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 10, color: 'var(--fg-muted)', width: 170, flexShrink: 0, fontFamily: 'monospace' }}>{row.name}</span>
@@ -376,7 +376,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
     </div>
 
     <div className="ml-insight-box">
-      💡 Senior Architectural Insight: Combining diverse base learners (RandomForest + GBDT + ExtraTrees) via a Ridge Meta-Learner reduces model variance and bias simultaneously. Stacking Regressor achieves R²=0.814 (+25.6% jump over standard Linear Regression).
+      Senior architectural insight: combining diverse base learners (RandomForest + GBDT + ExtraTrees) via a Ridge Meta-Learner reduces model variance and bias simultaneously. Stacking Regressor achieves R²=0.814 (+25.6% jump over standard Linear Regression).
     </div>
     <CodeBlock code={CODES.automl}/>
   </div>;

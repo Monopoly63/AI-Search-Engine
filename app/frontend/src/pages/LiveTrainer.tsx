@@ -11,13 +11,13 @@ type LogEntry = { level: 'info' | 'success' | 'warn' | 'error' | 'dim'; msg: str
 type TrainStatus = 'idle' | 'loading' | 'training' | 'done' | 'error';
 
 const KAGGLE_DATASETS = [
-  { id: 'kaggle_massive_500k', label: '⚡ Kaggle Massive Shards (500,000 records × 48 features)', url: null, note: 'Real BigData Pipeline' },
+  { id: 'kaggle_massive_500k', label: 'Kaggle Massive Shards (500,000 records × 48 features)', url: null, note: 'Real BigData Pipeline' },
   { id: 'mental_health', label: 'Mental Health Workplace (10k rows)', url: null, note: 'Built-in dataset' },
   { id: 'iris', label: 'Iris Classification (classic)', url: 'iris', note: 'sklearn built-in' },
   { id: 'diabetes', label: 'Diabetes Regression', url: 'diabetes', note: 'sklearn built-in' },
   { id: 'wine', label: 'Wine Quality Classification', url: 'wine', note: 'sklearn built-in' },
   { id: 'boston', label: 'Housing Price Regression', url: 'boston', note: 'classic dataset' },
-  { id: 'custom', label: '📁 Upload your own CSV...', url: null, note: 'Any CSV file' },
+  { id: 'custom', label: 'Upload your own CSV...', url: null, note: 'Any CSV file' },
 ];
 
 const ALGORITHMS = [
@@ -318,7 +318,7 @@ export default function LiveTrainer({ lang = 'en' }: Props) {
             </button>
           ) : (
             <button className="ml-btn" onClick={stopTraining}
-              style={{ background: '#ef4444', borderColor: '#ef4444' }}>
+              style={{ background: 'var(--danger)', borderColor: 'var(--danger)', color: 'var(--accent-fg)' }}>
               <span>■</span>
               {isRTL ? 'إيقاف' : 'Stop'}
             </button>
