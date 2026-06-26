@@ -329,7 +329,22 @@ html[dir="rtl"] .np-sans { font-family: "IBM Plex Sans Arabic", "Noto Sans Arabi
 }
 
 [data-theme="light"] .premium-topbar {
-  background: rgba(255,255,255,0.72);
+  background: rgba(255,255,255,0.85);
+}
+[data-theme="light"] .glass-card,
+[data-theme="light"] .command-rail,
+[data-theme="light"] .premium-topbar {
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1) !important;
+  color: #0f172a !important;
+}
+[data-theme="light"] .algo-meta,
+[data-theme="light"] .metric-sub,
+[data-theme="light"] .theory-list-button {
+  color: #334155 !important;
 }
 
 .topbar-brand,
@@ -979,9 +994,10 @@ html[dir="rtl"] .algorithm-button:hover { transform: translateX(-2px); }
 .ml-code-block,
 .theory-code-card {
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  background: rgba(0,0,0,0.28);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 20px;
+  background: #090d16;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.65);
 }
 .code-toolbar,
 .np-code-toolbar,
@@ -1040,11 +1056,12 @@ html[dir="rtl"] .algorithm-button:hover { transform: translateX(-2px); }
   margin: 0;
   max-height: 520px;
   overflow: auto;
-  background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.08));
-  color: var(--fg-muted);
+  background: #090d16;
+  color: #e2e8f0;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.72;
+  font-size: 13px;
+  line-height: 1.75;
+  padding: 18px 20px;
 }
 .np-code-scroll pre { margin: 0; padding: 16px 0; }
 .code-line { display: flex; min-width: min-content; }

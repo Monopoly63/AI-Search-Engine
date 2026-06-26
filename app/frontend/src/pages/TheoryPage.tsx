@@ -142,8 +142,66 @@ export default function TheoryPage() {
             ))}
           </aside>
 
-          <article className="glass-card theory-article">
+          <article className="glass-card theory-article" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Prominent Visible Lesson Navigation Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', padding: '12px 16px', background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)', borderRadius: 16, width: '100%' }} role="tablist" aria-label={isRTL ? 'تصفح الدروس' : 'Browse lessons'}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--fg-dim)', textTransform: 'uppercase', letterSpacing: 0.5, flexShrink: 0, paddingInlineEnd: 4 }}>
+                {isRTL ? 'الدروس:' : 'Lessons:'}
+              </span>
+              {AI_LECTURES.map((l) => {
+                const isActive = active === l.id;
+                return (
+                  <button
+                    key={l.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActive(l.id)}
+                    style={{
+                      padding: '8px 16px', borderRadius: 9999, border: isActive ? '1px solid var(--fg-strong)' : '1px solid transparent',
+                      background: isActive ? 'var(--fg-strong)' : 'transparent', color: isActive ? 'var(--bg)' : 'var(--fg-muted)',
+                      fontSize: 12, fontWeight: isActive ? 800 : 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 200ms', flexShrink: 0
+                    }}
+                  >
+                    {String(l.number).padStart(2, '0')}: {l.tag[isRTL ? 'ar' : 'en']}
+                  </button>
+                );
+              })}
+            </div>
+
             <LectureView key={active} lec={lec} isRTL={isRTL} />
+
+            {/* Prominent Lesson Pagination Controls */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
+              {(() => {
+                const idx = AI_LECTURES.findIndex(x => x.id === active);
+                return (
+                  <>
+                    <button
+                      type="button"
+                      disabled={idx <= 0}
+                      onClick={() => setActive(AI_LECTURES[idx - 1].id)}
+                      className="ghost-button"
+                      style={{ padding: '10px 18px', borderRadius: 12, fontWeight: 700, cursor: idx <= 0 ? 'not-allowed' : 'pointer', opacity: idx <= 0 ? 0.4 : 1 }}
+                    >
+                      → {isRTL ? 'الدرس السابق' : 'Previous Lesson'}
+                    </button>
+                    <span style={{ fontSize: 12, fontVariantNumeric: 'tabular-nums', color: 'var(--fg-dim)', fontWeight: 700 }}>
+                      {String(idx + 1).padStart(2, '0')} / {String(AI_LECTURES.length).padStart(2, '0')}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={idx >= AI_LECTURES.length - 1}
+                      onClick={() => setActive(AI_LECTURES[idx + 1].id)}
+                      className="primary-button"
+                      style={{ padding: '10px 22px', borderRadius: 12, fontWeight: 800, cursor: idx >= AI_LECTURES.length - 1 ? 'not-allowed' : 'pointer', opacity: idx >= AI_LECTURES.length - 1 ? 0.4 : 1 }}
+                    >
+                      {isRTL ? 'الدرس التالي' : 'Next Lesson'} ←
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
           </article>
         </div>
       </main>
