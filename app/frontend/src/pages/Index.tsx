@@ -1,6 +1,7 @@
+import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ALGOS, AlgoKey, CellState, Graph, GraphTrace, Point, RunStatus, ROWS, COLS } from './np-types';
-import { runAlgorithm, buildRandomGraph, traceGraphBFS, traceGraphDFS, traceGraphGreedy, traceGraphHill } from './np-algos';
+import { runAlgorithm, buildRandomGraph, traceGraphBFS, traceGraphDFS, traceGraphGreedy, traceGraphHill, traceGraphAStar } from './np-algos';
 import { CONTENT } from './np-content';
 import {
   SidebarLabel, MiniStatRow, SectionBar, Divider, Badge,
@@ -54,7 +55,7 @@ export default function Index() {
   const [fadeIn, setFadeIn] = useState<boolean>(true);
 
   const algoLabel = useMemo<Record<AlgoKey, string>>(() => ({
-    BFS: t.algoBFS, DFS: t.algoDFS, GREEDY: t.algoGreedy, HILL: t.algoHill,
+    BFS: t.algoBFS, DFS: t.algoDFS, GREEDY: t.algoGreedy, HILL: t.algoHill, ASTAR: t.algoASTAR,
   }), [t]);
 
   const handleAlgoChange = (next: AlgoKey) => {
@@ -158,6 +159,7 @@ export default function Index() {
     if (a === 'BFS') return traceGraphBFS(g);
     if (a === 'DFS') return traceGraphDFS(g);
     if (a === 'GREEDY') return traceGraphGreedy(g);
+    if (a === 'ASTAR') return traceGraphAStar(g);
     return traceGraphHill(g);
   }
 
@@ -234,6 +236,7 @@ export default function Index() {
       DFS: [t.dfsDesc1, t.dfsDesc2, t.dfsDesc3],
       GREEDY: [t.greDesc1, t.greDesc2, t.greDesc3],
       HILL: [t.hilDesc1, t.hilDesc2, t.hilDesc3],
+      ASTAR: [t.astarDesc1, t.astarDesc2, t.astarDesc3],
     };
     const localizeValue = (v: 'YES' | 'NO' | 'CONDITIONAL') => {
       if (lang === 'ar') {
@@ -322,6 +325,44 @@ export default function Index() {
               <SocialLink href={INSTAGRAM_URL} label={t.instagram} icon="◉" />
               <SocialLink href={GITHUB_URL} label={t.github} icon="⟠" />
             </div>
+          </div>
+
+
+          {/* ML Lab nav */}
+          <div style={{ marginBottom: 14 }}>
+            <RouterLink
+to="/ml-lab"
+              className="np-sans"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '9px 12px', borderRadius: 4,
+                background: 'var(--bg-panel)', color: 'var(--fg)',
+                border: '1px solid var(--border-strong)',
+                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
+                textDecoration: 'none', cursor: 'pointer',
+                transition: 'border-color .15s',
+              }}
+            >
+              <span style={{ color: 'var(--accent)' }}>⚗</span>
+              <span>{lang === 'ar' ? 'مختبر ML' : 'ML Lab'}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
+            </RouterLink>
+            <RouterLink
+              to="/theory"
+              className="np-sans"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '9px 12px', borderRadius: 4,
+                background: 'var(--bg-panel)', color: 'var(--fg)',
+                border: '1px solid var(--border-strong)',
+                fontSize: 10.5, letterSpacing: 1, fontWeight: 600,
+                textDecoration: 'none', cursor: 'pointer',
+              }}
+            >
+              <span style={{ color: 'var(--accent)' }}>📖</span>
+              <span>{lang === 'ar' ? 'المحاضرات' : 'Theory'}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
+            </RouterLink>
           </div>
 
           {/* Theme + Lang toggles */}

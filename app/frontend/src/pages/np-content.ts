@@ -194,6 +194,64 @@ def hill_climbing(grid, start, goal):
     return path
 `,
   },
+
+  ASTAR: {
+    description: [
+      'A* (A-star) is the gold standard of informed search. It combines the actual cost g(n) — distance from start — with a heuristic h(n) — estimated distance to goal — to compute f(n) = g(n) + h(n).',
+      'A* always expands the node with the lowest f(n). When the heuristic is admissible (never overestimates), A* is both complete and optimal — it guarantees the shortest path.',
+      'On a 2D grid, Manhattan distance is an admissible h(n). A* explores fewer nodes than BFS by ignoring expensive directions, making it the algorithm of choice in robotics, game pathfinding, and navigation.',
+    ],
+    properties: { complete: 'YES', optimal: 'YES', time: 'O(b^d)', space: 'O(b^d)' },
+    flow: ['START', 'PUSH (start, f=g+h)', 'POP min f(n)', 'GOAL?', 'EXPAND neighbors', 'UPDATE g + f', 'RETURN optimal path'],
+    python: `import heapq
+
+# إيجاد أقصر مسار بـ A* على شبكة ثنائية الأبعاد
+def astar(grid, start, goal):
+    rows, cols = len(grid), len(grid[0])
+
+    def h(node):
+        # استدلال: مسافة مانهاتن (مقبولة لأنها لا تبالغ أبدًا)
+        return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
+
+    # (f, g, node) حيث f = g + h
+    pq = [(h(start), 0, start)]
+    g_score = {start: 0}
+    parent = {start: None}
+    visited = set()
+
+    while pq:
+        f, g, current = heapq.heappop(pq)
+        if current in visited:
+            continue
+        visited.add(current)
+
+        if current == goal:
+            return reconstruct(parent, goal)
+
+        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr, nc = current[0] + dr, current[1] + dc
+            neighbor = (nr, nc)
+            if not (0 <= nr < rows and 0 <= nc < cols):
+                continue
+            if grid[nr][nc] == 1 or neighbor in visited:
+                continue
+            new_g = g + 1  # تكلفة موحدة = 1 لكل خطوة
+            if new_g < g_score.get(neighbor, float('inf')):
+                g_score[neighbor] = new_g
+                parent[neighbor] = current
+                heapq.heappush(pq, (new_g + h(neighbor), new_g, neighbor))
+
+    return None  # لا يوجد مسار
+
+def reconstruct(parent, goal):
+    path, node = [], goal
+    while node is not None:
+        path.append(node)
+        node = parent[node]
+    return list(reversed(path))
+`,
+  },
+
 };
 
 const PY_KEYWORDS = new Set(['def','return','if','elif','else','for','while','in','not','and','or','import','from','as','None','True','False','continue','break','pass','class','with','try','except','raise','lambda','is','yield','global','nonlocal']);

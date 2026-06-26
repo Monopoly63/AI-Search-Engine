@@ -1,5 +1,5 @@
 export type CellKind = 'empty' | 'wall';
-export type AlgoKey = 'BFS' | 'DFS' | 'GREEDY' | 'HILL';
+export type AlgoKey = 'BFS' | 'DFS' | 'GREEDY' | 'HILL' | 'ASTAR';
 export type Point = { r: number; c: number };
 
 export type CellState = {
@@ -35,6 +35,7 @@ export const ALGOS: { key: AlgoKey; name: string; short: string; tagline: string
   { key: 'DFS',    name: 'Depth-First Search',       short: 'DFS',           tagline: 'Dive deep first. The relentless explorer.' },
   { key: 'GREEDY', name: 'Greedy Best-First Search', short: 'GREEDY BFS',    tagline: 'Always chase the closest goal. Fast, but not always right.' },
   { key: 'HILL',   name: 'Hill Climbing',            short: 'HILL CLIMBING', tagline: 'Only move uphill. Beware local optima.' },
+  { key: 'ASTAR',  name: 'A* Search',                 short: 'A* SEARCH',     tagline: 'Optimal + informed. g(n) + h(n) guarantees the best path.' },
 ];
 
 export type GraphNode = { id: number; label: string; x: number; y: number };

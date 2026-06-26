@@ -79,6 +79,7 @@ export function runAlgorithm(algo: AlgoKey, grid: CellState[][], start: Point, g
     case 'DFS': return runDFS(grid, start, goal);
     case 'GREEDY': return runGreedy(grid, start, goal);
     case 'HILL': return runHillClimbing(grid, start, goal);
+    case 'ASTAR': return runAStar(grid, start, goal);
   }
 }
 
@@ -229,4 +230,72 @@ export function buildLandscape(): Landscape {
     ys.push(Math.min(1, Math.max(0, y)));
   }
   return { xs, ys };
+}
+export function runAStar(grid: CellState[][], start: Point, goal: Point): AlgoSnapshot {
+  const visitedOrder: Point[] = [];
+  const seen = new Set<string>();
+  const parent = new Map<string, Point | null>();
+  const gScore = new Map<string, number>();
+  const pq = new MinHeap<Point>();
+  const startKey = key(start);
+  gScore.set(startKey, 0);
+  parent.set(startKey, null);
+  pq.push(start, manhattan(start, goal));
+  while (pq.size() > 0) {
+    const cur = pq.pop()!;
+    const curKey = key(cur);
+    if (seen.has(curKey)) continue;
+    seen.add(curKey); visitedOrder.push(cur);
+    if (pointsEqual(cur, goal)) {
+      const path = reconstruct(parent, cur);
+      return { visitedOrder, path, found: true, nodesExplored: visitedOrder.length, pathLength: path.length };
+    }
+    const g = gScore.get(curKey) ?? Infinity;
+    for (const nb of neighbors(cur)) {
+      if (!inBounds(nb) || grid[nb.r][nb.c].kind === 'wall') continue;
+      const nbKey = key(nb);
+      const newG = g + 1;
+      if (newG < (gScore.get(nbKey) ?? Infinity)) {
+        gScore.set(nbKey, newG);
+        parent.set(nbKey, cur);
+        pq.push(nb, newG + manhattan(nb, goal));
+      }
+    }
+  }
+  return { visitedOrder, path: [], found: false, nodesExplored: visitedOrder.length, pathLength: 0 };
+}
+
+export function traceGraphAStar(g: Graph): GraphTrace {
+  const gScore = new Map<number, number>([[g.start, 0]]);
+  const parent = new Map<number, number | null>([[g.start, null]]);
+  const visited = new Set<number>();
+  const dist = (a: number, b: number) => Math.hypot(g.nodes[a].x - g.nodes[b].x, g.nodes[a].y - g.nodes[b].y);
+  const pq: { f: number; g: number; id: number }[] = [{ f: dist(g.start, g.goal), g: 0, id: g.start }];
+  const steps: GraphTrace['steps'] = [];
+  let found = false;
+  while (pq.length > 0) {
+    pq.sort((a, b) => a.f - b.f);
+    const { id: cur, g: curG } = pq.shift()!;
+    if (visited.has(cur)) continue;
+    visited.add(cur);
+    const frontier = pq.map((x) => x.id);
+    steps.push({ current: cur, visited: Array.from(visited), frontier });
+    if (cur === g.goal) { found = true; break; }
+    for (const nb of g.adj[cur]) {
+      if (visited.has(nb)) continue;
+      const newG = curG + dist(cur, nb);
+      if (newG < (gScore.get(nb) ?? Infinity)) {
+        gScore.set(nb, newG);
+        parent.set(nb, cur);
+        pq.push({ f: newG + dist(nb, g.goal), g: newG, id: nb });
+      }
+    }
+  }
+  const finalPath: number[] = [];
+  if (found) {
+    let c: number | null | undefined = g.goal;
+    while (c !== null && c !== undefined) { finalPath.push(c); c = parent.get(c) ?? null; }
+    finalPath.reverse();
+  }
+  return { steps, finalPath, found, frontierLabel: 'PRIORITY QUEUE' };
 }

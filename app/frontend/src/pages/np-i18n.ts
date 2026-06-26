@@ -100,6 +100,8 @@ export type Dict = {
   dfsDesc1: string; dfsDesc2: string; dfsDesc3: string;
   greDesc1: string; greDesc2: string; greDesc3: string;
   hilDesc1: string; hilDesc2: string; hilDesc3: string;
+  algoASTAR: string;
+  astarDesc1: string; astarDesc2: string; astarDesc3: string;
 };
 
 export const DICTS: Record<Lang, Dict> = {
@@ -208,6 +210,12 @@ export const DICTS: Record<Lang, Dict> = {
     greDesc1: 'Greedy Best-First Search uses a heuristic h(n) to estimate how close a node is to the goal, and always expands the node that looks best right now.',
     greDesc2: 'A priority queue orders the frontier by the heuristic. For grids, the Manhattan distance |dx| + |dy| is a typical h(n).',
     greDesc3: 'Greedy is fast and often finds a reasonable path quickly — but it is not optimal: it can be lured down promising-looking dead ends.',
+
+
+    algoASTAR: 'A* Search',
+    astarDesc1: 'A* (A-star) combines actual path cost g(n) with a heuristic estimate h(n) to produce f(n) = g(n) + h(n). It always expands the node with the lowest f(n).',
+    astarDesc2: 'When the heuristic is admissible — it never overestimates the true cost — A* is both complete and optimal, guaranteeing the shortest path every time.',
+    astarDesc3: 'On a 2D grid, Manhattan distance is admissible. A* is the algorithm behind GPS navigation, game AI pathfinding, and robotics motion planning.',
 
     hilDesc1: 'Hill Climbing is a local search algorithm: it repeatedly moves to the neighbor with the best heuristic value, never looking back.',
     hilDesc2: 'The steepest-ascent variant evaluates all neighbors and picks the strictly better one. If no neighbor improves h(n), the search halts — even if the true goal has not been reached.',
@@ -318,6 +326,12 @@ export const DICTS: Record<Lang, Dict> = {
     greDesc1: 'البحث الجشع الأفضل أولاً يستخدم استدلالاً h(n) لتقدير قرب العُقدة من الهدف، ويوسّع دائماً العُقدة التي تبدو الأفضل الآن.',
     greDesc2: 'يرتّب طابور الأولوية الحدود وفق الاستدلال. في الشبكات تُعدّ مسافة مانهاتن |dx| + |dy| خياراً شائعاً لـ h(n).',
     greDesc3: 'الجشع سريع وغالباً ما يجد مساراً معقولاً بسرعة — لكنه ليس أمثل: قد ينجذب إلى طرق تبدو واعدة لكنها طرق مسدودة.',
+
+
+    algoASTAR: 'بحث A*',
+    astarDesc1: 'A* تجمع بين تكلفة المسار الفعلية g(n) وتقدير الاستدلال h(n) لإنتاج f(n) = g(n) + h(n). دائماً توسّع العُقدة ذات أدنى f(n).',
+    astarDesc2: 'عندما يكون الاستدلال مقبولاً — لا يُبالغ في تقدير التكلفة الحقيقية — فإن A* مكتملة وأمثل في آنٍ واحد، وتضمن أقصر مسار في كل مرة.',
+    astarDesc3: 'في الشبكة الثنائية الأبعاد، مسافة مانهاتن هي استدلال مقبول. A* هي الخوارزمية خلف تطبيقات GPS وذكاء الألعاب والروبوتات.',
 
     hilDesc1: 'التسلّق خوارزمية بحث محلّي: تنتقل مراراً إلى الجار الأفضل استدلالياً، دون أن تنظر وراءها.',
     hilDesc2: 'النسخة الأكثر انحداراً تُقيّم جميع الجيران وتختار الأفضل حقيقياً. إن لم يُحسّن أي جار h(n)، يتوقّف البحث — حتى لو لم يُبلغ الهدف فعلياً.',
