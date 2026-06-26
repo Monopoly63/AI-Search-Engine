@@ -1637,19 +1637,29 @@ input[type="range"].np-range::-moz-range-thumb {
   .premium-shell { display: block; padding: 10px; }
   .mobile-commandbar { display: flex; }
   .command-rail {
-    position: fixed;
-    z-index: 60;
-    top: 84px;
-    bottom: 10px;
-    inset-inline-start: 10px;
-    width: min(360px, calc(100vw - 20px));
-    height: auto;
-    min-height: 0;
-    transform: translateX(calc(-100% - 20px));
+    position: fixed !important;
+    z-index: 100 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    inset-inline-start: 0 !important;
+    width: min(320px, 86vw) !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: 0 !important;
+    border-radius: 0 24px 24px 0 !important;
+    overflow-y: auto !important;
+    padding: 24px 18px !important;
+    background: var(--bg-panel) !important;
+    box-shadow: 0 0 60px rgba(0,0,0,0.85) !important;
+    transform: translateX(-105%);
     transition: transform 280ms cubic-bezier(.2,.8,.2,1);
   }
-  html[dir="rtl"] .command-rail { transform: translateX(calc(100% + 20px)); }
-  .command-rail.is-open { transform: translateX(0); }
+  html[dir="rtl"] .command-rail {
+    border-radius: 24px 0 0 24px !important;
+    transform: translateX(105%);
+  }
+  .command-rail.is-open { transform: translateX(0) !important; }
+  .rail-scroll { overflow-y: visible !important; height: auto !important; flex: none !important; }
   .premium-main { margin-top: 10px; }
   .topbar-nav { order: 3; width: 100%; justify-content: center; overflow-x: auto; }
   .premium-topbar { border-radius: 28px; flex-wrap: wrap; justify-content: center; }
