@@ -318,10 +318,14 @@ export default function Index() {
       </div>
         {/* ========== SIDEBAR ========== */}
         <aside className={`np-sidebar np-scroll${sidebarOpen ? " np-sidebar--open" : ""}`} style={{
-          borderInlineEnd: '1px solid var(--border)',
-          background: 'var(--bg-panel)',
-          padding: '22px 20px',
-          position: 'sticky', top: 0, alignSelf: 'start', height: '100vh', overflowY: 'auto',
+          margin: '16px',
+          borderRadius: '24px',
+          border: '1px solid rgba(255,255,255,0.12)',
+          background: 'rgba(19, 21, 28, 0.75)',
+          backdropFilter: 'blur(24px)',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
+          padding: '24px 20px',
+          position: 'sticky', top: '16px', alignSelf: 'start', height: 'calc(100vh - 32px)', overflowY: 'auto',
         }}>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
@@ -493,7 +497,7 @@ export default function Index() {
         </aside>
 
         {/* ========== MAIN ========== */}
-        <main style={{ padding: '28px 40px 64px', maxWidth: 1160, width: '100%' }}>
+        <main style={{ margin: '16px 16px 16px 0', padding: '32px 36px 64px', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', boxShadow: '0 25px 60px rgba(0,0,0,0.7)', maxWidth: 1200, width: 'calc(100% - 16px)' }}>
           {/* Top strip */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
             <div>

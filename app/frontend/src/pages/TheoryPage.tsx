@@ -148,11 +148,14 @@ export default function TheoryPage() {
 
       {/* ── HEADER ── */}
       <header style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: 'var(--bg)',
-        borderBottom: '1px solid var(--border)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
+        position: 'sticky', top: 16, zIndex: 50,
+        maxWidth: 1240, margin: '16px auto',
+        borderRadius: 9999,
+        background: 'rgba(19, 21, 28, 0.85)',
+        border: '1px solid rgba(255,255,255,0.14)',
+        boxShadow: '0 15px 45px rgba(0,0,0,0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
       }}>
         <div style={{
           maxWidth: 1280, margin: '0 auto',
@@ -173,7 +176,7 @@ export default function TheoryPage() {
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--fg-strong)', textTransform: 'uppercase' }}>
-                {isRTL ? 'المستكشف العصبي' : 'Neural Pathfinder'}
+                {isRTL ? 'سينابس نكسس الذكي' : 'SYNAPSE NEXUS AI'}
               </div>
               <div style={{ fontSize: 9, color: 'var(--fg-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
                 {isRTL ? 'محاضرات نظرية' : 'Theory Lectures'}
