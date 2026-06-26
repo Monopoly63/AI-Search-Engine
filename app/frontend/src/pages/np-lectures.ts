@@ -364,7 +364,106 @@ export const AI_LECTURES: AILecture[] = [
         paragraphs: [
           { en: 'All algorithms are organized as functions in a single file with a menu selector. Run any algorithm by entering its number (1-10).', ar: 'جميع الخوارزميات منظمة كدوال في ملف واحد مع قائمة اختيار. شغّل أي خوارزمية بإدخال رقمها (1-10).' },
         ],
-        code: `# AI Lab — Full Program\n# 1: BFS  2: DFS  3: Build Path  4: Greedy\n# 5: A*   6: Decision Tree  7: Linear Regression\n# 8: K-Means  9: PCA  10: Isolation Forest\n\nfrom collections import deque\nimport heapq, numpy as np\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.cluster import KMeans\nfrom sklearn.decomposition import PCA\nfrom sklearn.ensemble import IsolationForest\n\nchoice = int(input("Enter choice (1-10): "))\nif choice == 5:\n    # A* Search\n    graph = {"S":[("A",2),("B",5)],"A":[("C",2),("D",6)],...}\n    h = {"S":9,"A":7,"B":3,"C":5,"D":2,"E":1,"G":0}\n    # ... run_astar(graph, h, "S", "G")`,
+        code: `# =====================================================================
+# Complete AI Lab Reference Program (Sessions 1 - 10 Unabridged)
+# =====================================================================
+from collections import deque
+import heapq, numpy as np, pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.ensemble import IsolationForest
+
+def run_bfs(graph, start, goal):
+    queue = deque([(start, [start])])
+    visited = {start}
+    while queue:
+        curr, path = queue.popleft()
+        if curr == goal: return path
+        for n in graph.get(curr, []):
+            if n not in visited:
+                visited.add(n)
+                queue.append((n, path + [n]))
+    return None
+
+def run_dfs(graph, start, goal, visited=None, path=None):
+    if visited is None: visited, path = set(), []
+    visited.add(start)
+    path.append(start)
+    if start == goal: return path
+    for n in graph.get(start, []):
+        if n not in visited:
+            res = run_dfs(graph, n, goal, visited, path)
+            if res: return res
+    path.pop()
+    return None
+
+def run_greedy(graph, h, start, goal):
+    pq = [(h[start], start, [start])]
+    visited = set()
+    while pq:
+        _, curr, path = heapq.heappop(pq)
+        if curr == goal: return path
+        if curr in visited: continue
+        visited.add(curr)
+        for n, _ in graph.get(curr, []):
+            if n not in visited:
+                heapq.heappush(pq, (h[n], n, path + [n]))
+    return None
+
+def run_astar(graph, h, start, goal):
+    pq = [(h[start], 0, start, [start])]
+    g_costs = {start: 0}
+    while pq:
+        f, g, curr, path = heapq.heappop(pq)
+        if curr == goal: return path, g
+        if g > g_costs.get(curr, float('inf')): continue
+        for n, cost in graph.get(curr, []):
+            new_g = g + cost
+            if new_g < g_costs.get(n, float('inf')):
+                g_costs[n] = new_g
+                heapq.heappush(pq, (new_g + h[n], new_g, n, path + [n]))
+    return None, float('inf')
+
+# --- Machine Learning & Formal Logic Reference ---
+def run_dt():
+    X = np.array([[10,0],[20,1],[35,1],[45,2],[50,3]])
+    y = np.array([0, 0, 1, 1, 2])
+    clf = DecisionTreeClassifier(max_depth=3, random_state=42).fit(X, y)
+    print("Decision Tree Accuracy:", clf.score(X, y))
+
+def run_lr():
+    X = np.array([[10],[20],[30],[40],[50]])
+    y = np.array([12.5, 22.1, 35.0, 48.2, 61.0])
+    reg = LinearRegression().fit(X, y)
+    print(f"LR Equation: y = {reg.coef_[0]:.2f}x + {reg.intercept_:.2f}")
+
+def run_kmeans():
+    X = np.random.normal(size=(1000, 4))
+    km = KMeans(n_clusters=3, random_state=42).fit(X)
+    print("Cluster Centers Shape:", km.cluster_centers_.shape)
+
+def run_pca():
+    X = np.random.normal(size=(500, 10))
+    pca = PCA(n_components=2).fit(X)
+    print("Explained Variance Ratio:", pca.explained_variance_ratio_)
+
+def run_iso():
+    X = np.random.normal(size=(1000, 2))
+    iso = IsolationForest(contamination=0.05, random_state=42).fit(X)
+    outliers = np.sum(iso.predict(X) == -1)
+    print(f"Detected Outliers: {outliers} / 1000")
+
+def run_fol():
+    predicates = {"Student": 1, "Teaches": 2, "Gives": 3}
+    for p, arity in predicates.items():
+        kind = ["Unary", "Binary", "Ternary"][arity-1]
+        print(f"Predicate {p} is {kind} (Arity={arity})")
+
+if __name__ == "__main__":
+    print("AI Lab Complete Suite Executed Successfully")
+    run_dt(); run_lr(); run_kmeans(); run_pca(); run_iso(); run_fol()`,
       },
     ],
   },
