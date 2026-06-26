@@ -1,109 +1,168 @@
-import React, { useEffect, useState } from 'react';
+/**
+ * MLLabPage — wrapper for the ML Lab module
+ * Uses CSS variables only — fully theme-aware (dark + light)
+ */
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FlaskConical, GitBranch, GraduationCap, Instagram } from 'lucide-react';
-import {
-  Lang, Theme, DICTS, getSavedLang, getSavedTheme,
-  applyDocumentLang, applyDocumentTheme,
-} from './np-i18n';
-// Inline toggles (no Tree Lab dependency)
+import { Lang, Theme, DICTS, getSavedLang, getSavedTheme, applyDocumentLang, applyDocumentTheme } from './np-i18n';
 import MLLab from './MLLab';
-
-const INSTAGRAM_URL = 'https://www.instagram.com/li0vy_?igsh=MXZ2czd3ODA3ejJ6ZA==';
 
 export default function MLLabPage() {
   const [lang, setLang] = useState<Lang>(() => getSavedLang());
   const [theme, setTheme] = useState<Theme>(() => getSavedTheme());
   const t = DICTS[lang];
   const isRTL = lang === 'ar';
+  const isLight = theme === 'light';
 
-  useEffect(() => { applyDocumentLang(lang); window.localStorage.setItem('np-lang', lang); }, [lang]);
-  useEffect(() => { applyDocumentTheme(theme); window.localStorage.setItem('np-theme', theme); }, [theme]);
+  useEffect(() => { applyDocumentLang(lang);  localStorage.setItem('np-lang', lang);  }, [lang]);
+  useEffect(() => { applyDocumentTheme(theme); localStorage.setItem('np-theme', theme); }, [theme]);
+
+  const toggleTheme = () => setTheme(th => th === 'dark' ? 'light' : 'dark');
+  const toggleLang  = () => setLang(l  => l  === 'en'   ? 'ar'   : 'en');
 
   return (
-    <div className="min-h-screen text-white relative">
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 glass-header">
-        <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="relative w-11 h-11 rounded-xl glass-strong flex items-center justify-center">
-              <FlaskConical className="w-5 h-5 text-white" strokeWidth={1.5} />
-              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-white animate-pulse-glow"></span>
+    <div dir={isRTL ? 'rtl' : 'ltr'}
+      style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)', fontFamily: 'Inter, sans-serif' }}>
+
+      {/* ── HEADER ── */}
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}>
+        <div style={{
+          maxWidth: 1280, margin: '0 auto',
+          padding: '12px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 16, flexWrap: 'wrap',
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 34, height: 34,
+              border: '1.5px solid var(--accent)',
+              borderRadius: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: 'var(--shadow-glow)',
+            }}>
+              <div style={{ width: 12, height: 12, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
             </div>
             <div>
-              <h1 className="text-base md:text-lg font-semibold text-white" style={{letterSpacing:'0.05em'}}>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--fg-strong)', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
                 {isRTL ? 'مختبر التعلم الآلي' : 'ML Lab'}
-              </h1>
-              <p className="text-[10px] text-[#a0a0a0] uppercase mt-0.5" style={{letterSpacing:'0.15em'}}>
-                {isRTL ? 'بيانات Kaggle الحقيقية' : 'Real Kaggle Data · 10,000 Records'}
-              </p>
+              </div>
+              <div style={{ fontSize: 9, color: 'var(--fg-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
+                {isRTL ? 'بيانات Kaggle · 10,000 سجل' : 'Real Kaggle Data · 10,000 Records'}
+              </div>
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-1 glass p-1 rounded-xl">
-            <Link to="/" className="px-4 py-1.5 text-xs font-semibold text-[#a0a0a0] hover:text-white rounded-lg transition-colors inline-flex items-center gap-1.5">
-              <GitBranch className="w-3.5 h-3.5" strokeWidth={1.5} />
-              {isRTL ? 'البحث' : 'AI Search'}
-            </Link>
-            <span className="px-4 py-1.5 text-xs font-semibold text-white glass-strong rounded-lg inline-flex items-center gap-1.5">
-              <FlaskConical className="w-3.5 h-3.5" strokeWidth={1.5} />
-              {isRTL ? 'المختبر' : 'ML Lab'}
-            </span>
+          {/* Nav */}
+          <nav style={{
+            display: 'flex', gap: 3,
+            padding: '3px',
+            border: '1px solid var(--border)',
+            borderRadius: 8,
+            background: 'var(--bg-panel)',
+          }}>
+            {[
+              { to: '/',        label: isRTL ? 'البحث'     : 'AI Search' },
+              { to: '/ml-lab',  label: isRTL ? 'المختبر'   : 'ML Lab',   active: true },
+              { to: '/theory',  label: isRTL ? 'المحاضرات' : 'Theory' },
+            ].map(item => (
+              <Link key={item.to} to={item.to} style={{
+                padding: '5px 14px', borderRadius: 6,
+                fontSize: 11, fontWeight: 600,
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+                color: item.active ? 'var(--fg-strong)' : 'var(--fg-muted)',
+                background: item.active ? 'var(--bg-elevated)' : 'transparent',
+                border: item.active ? '1px solid var(--border-strong)' : '1px solid transparent',
+                transition: 'all 150ms',
+              }}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <button onClick={() => { const l = lang === 'en' ? 'ar' : 'en'; setLang(l); window.localStorage.setItem('np-lang', l); }}
-              style={{padding:'6px 12px',borderRadius:6,border:'1px solid rgba(255,255,255,.12)',background:'rgba(255,255,255,.04)',color:'rgba(255,255,255,.6)',fontSize:10,cursor:'pointer',fontFamily:'monospace'}}>
+          {/* Toggles */}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={toggleTheme} style={{
+              padding: '6px 12px', borderRadius: 5,
+              border: '1px solid var(--border-strong)',
+              background: 'var(--bg-panel)', color: 'var(--fg-muted)',
+              fontSize: 10, cursor: 'pointer', fontFamily: 'monospace',
+              transition: 'all 150ms',
+            }}>
+              {isLight ? '☀ Light' : '☾ Dark'}
+            </button>
+            <button onClick={toggleLang} style={{
+              padding: '6px 12px', borderRadius: 5,
+              border: '1px solid var(--border-strong)',
+              background: 'var(--bg-panel)', color: 'var(--fg-muted)',
+              fontSize: 10, cursor: 'pointer', fontFamily: 'monospace',
+              transition: 'all 150ms',
+            }}>
               {lang === 'en' ? 'العربية' : 'English'}
             </button>
-            <button onClick={() => { const t = theme === 'dark' ? 'light' : 'dark'; setTheme(t); applyDocumentTheme(t); window.localStorage.setItem('np-theme', t); }}
-              style={{padding:'6px 12px',borderRadius:6,border:'1px solid rgba(255,255,255,.12)',background:'rgba(255,255,255,.04)',color:'rgba(255,255,255,.6)',fontSize:10,cursor:'pointer',fontFamily:'monospace'}}>
-              {theme === 'dark' ? '☀' : '☾'}
-            </button>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="group w-11 h-11 rounded-xl glass hidden sm:flex items-center justify-center transition-all duration-200 hover:bg-white/10">
-              <Instagram className="w-5 h-5 text-white/90" strokeWidth={1.5} />
-            </a>
           </div>
         </div>
       </header>
 
-      {/* MAIN */}
-      <main className="max-w-7xl mx-auto px-5 py-8">
-        {/* Hero section */}
-        <div className="mb-8">
-          <div className="glass-strong rounded-2xl p-6 md:p-8">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center flex-shrink-0">
-                <FlaskConical className="w-6 h-6 text-white" strokeWidth={1.5} />
-              </div>
-              <div>
-                <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
-                  {isRTL ? 'مختبر التعلم الآلي التفاعلي' : 'Interactive Machine Learning Lab'}
-                </h2>
-                <p className="text-sm text-[#a0a0a0] max-w-2xl">
-                  {isRTL
-                    ? 'جميع النتائج محسوبة من بيانات Kaggle الحقيقية (10,000 موظف، 34 خاصية) باستخدام scikit-learn الفعلي. لا بيانات وهمية.'
-                    : 'All results computed from real Kaggle data (10,000 employees, 34 features) using actual scikit-learn models. Zero mock data.'}
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {['Linear Regression','K-Means','PCA','Decision Tree','Isolation Forest','Random Forest'].map(m=>(
-                    <span key={m} className="px-3 py-1 rounded-full text-xs font-medium"
-                      style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',color:'rgba(255,255,255,.65)'}}>
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              </div>
+      {/* ── HERO BANNER ── */}
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '28px 20px 0' }}>
+        <div style={{
+          background: 'var(--bg-panel)',
+          border: '1px solid var(--border)',
+          borderRadius: 8,
+          padding: '20px 24px',
+          marginBottom: 24,
+          display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap',
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 6,
+            border: '1.5px solid var(--accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0, background: 'var(--accent-soft)',
+          }}>
+            <span style={{ fontSize: 20 }}>⚗</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--fg-strong)', letterSpacing: 0.3 }}>
+              {isRTL ? 'مختبر التعلم الآلي التفاعلي' : 'Interactive Machine Learning Lab'}
+            </h2>
+            <p style={{ margin: '0 0 12px', fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1.6 }}>
+              {isRTL
+                ? 'جميع النتائج محسوبة من بيانات Kaggle الحقيقية (10,000 موظف، 34 خاصية). لا بيانات وهمية.'
+                : 'All results computed from real Kaggle data (10,000 employees, 34 features). Zero mock data.'}
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {['Linear Regression','K-Means','PCA','Decision Tree','Isolation Forest','Random Forest'].map(m => (
+                <span key={m} style={{
+                  padding: '3px 10px', borderRadius: 4,
+                  fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+                  background: 'var(--accent-soft)',
+                  border: '1px solid var(--border-strong)',
+                  color: 'var(--fg-muted)',
+                }}>{m}</span>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* ML Lab Module */}
-        <div className="glass rounded-2xl overflow-hidden">
+        {/* ── ML Lab Module ── */}
+        <div style={{
+          background: 'var(--bg-panel)',
+          border: '1px solid var(--border)',
+          borderRadius: 8,
+          overflow: 'hidden',
+          marginBottom: 40,
+        }}>
           <MLLab lang={lang} />
         </div>
-      </main>
-
+      </div>
     </div>
   );
 }

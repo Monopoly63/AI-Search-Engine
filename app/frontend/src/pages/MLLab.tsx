@@ -113,10 +113,10 @@ function useScaleXY(data:[number,number][],pad:{t:number,r:number,b:number,l:num
 
 function Axes({pad,W,H,xLabel,yLabel}:{pad:any;W:number;H:number;xLabel?:string;yLabel?:string}){
   return<>
-    <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t+H} stroke="rgba(255,255,255,.12)" strokeWidth={1}/>
-    <line x1={pad.l} y1={pad.t+H} x2={pad.l+W} y2={pad.t+H} stroke="rgba(255,255,255,.12)" strokeWidth={1}/>
-    {xLabel&&<text x={pad.l+W/2} y={pad.t+H+20} textAnchor="middle" fill="rgba(255,255,255,.35)" fontSize={9}>{xLabel}</text>}
-    {yLabel&&<text x={8} y={pad.t+H/2} textAnchor="middle" fill="rgba(255,255,255,.35)" fontSize={9} transform={`rotate(-90,8,${pad.t+H/2})`}>{yLabel}</text>}
+    <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t+H} stroke="var(--border)" strokeWidth={1}/>
+    <line x1={pad.l} y1={pad.t+H} x2={pad.l+W} y2={pad.t+H} stroke="var(--border)" strokeWidth={1}/>
+    {xLabel&&<text x={pad.l+W/2} y={pad.t+H+20} textAnchor="middle" fill="var(--fg-dim)" fontSize={9}>{xLabel}</text>}
+    {yLabel&&<text x={8} y={pad.t+H/2} textAnchor="middle" fill="var(--fg-dim)" fontSize={9} transform={`rotate(-90,8,${pad.t+H/2})`}>{yLabel}</text>}
   </>;
 }
 
@@ -137,8 +137,8 @@ function LRChart({data}:{data:[number,number,number][]}){
   const pMax=data.reduce((a,b)=>a[0]>b[0]?a:b);
   return<svg width="100%" viewBox="0 0 300 180" className="overflow-visible">
     <Axes pad={pad} W={W} H={H} xLabel="Work Hours" yLabel="Burnout Score"/>
-    {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={2.5} fill="rgba(255,255,255,.4)"opacity={0.7}/>)}
-    <line x1={px(pMin[0])} y1={py(pMin[2])} x2={px(pMax[0])} y2={py(pMax[2])} stroke="rgba(255,255,255,.9)" strokeWidth={1.5}/>
+    {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={2.5} fill="var(--fg-muted)"opacity={0.7}/>)}
+    <line x1={px(pMin[0])} y1={py(pMin[2])} x2={px(pMax[0])} y2={py(pMax[2])} stroke="var(--accent)" strokeWidth={1.5}/>
   </svg>;
 }
 
@@ -150,9 +150,9 @@ function BarChart({data}:{data:[string,number][]}){
     {data.map(([lbl,val],i)=>{
       const y=pad.t+i*26;const bw=(val/max)*bW;
       return<g key={i}>
-        <text x={pad.l-6} y={y+16} textAnchor="end" fill="rgba(255,255,255,.55)" fontSize={9}>{lbl}</text>
-        <rect x={pad.l} y={y+4} width={bw} height={16} rx={2} fill="rgba(255,255,255,.7)"/>
-        <text x={pad.l+bw+4} y={y+16} fill="rgba(255,255,255,.45)" fontSize={9}>{(val*100).toFixed(1)}%</text>
+        <text x={pad.l-6} y={y+16} textAnchor="end" fill="var(--fg-dim)" fontSize={9}>{lbl}</text>
+        <rect x={pad.l} y={y+4} width={bw} height={16} rx={2} fill="var(--accent)"/>
+        <text x={pad.l+bw+4} y={y+16} fill="var(--fg-muted)" fontSize={9}>{(val*100).toFixed(1)}%</text>
       </g>;
     })}
   </svg>;
@@ -163,7 +163,7 @@ function PCAScatter({data}:{data:[number,number][]}){
   const {px,py}=useScaleXY(data,pad,W,H);
   return<svg width="100%" viewBox="0 0 300 180" className="overflow-visible">
     <Axes pad={pad} W={W} H={H} xLabel="PC1 (41.0%)" yLabel="PC2 (26.4%)"/>
-    {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={3} fill="rgba(255,255,255,.55)" opacity={0.8}/>)}
+    {data.map(([x,y],i)=><circle key={i} cx={px(x)} cy={py(y)} r={3} fill="var(--fg-muted)" opacity={0.8}/>)}
   </svg>;
 }
 
@@ -192,8 +192,8 @@ function Pill({label,value,sub}:{label:string;value:string;sub?:string}){
 /* Module renderers */
 function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
   const d=ML_DATA;
-  const CLR=['rgba(255,255,255,.9)','rgba(255,255,255,.45)','rgba(255,255,255,.65)'];
-  const ISO=(v:number)=>v===-1?'rgba(255,70,70,.9)':'rgba(255,255,255,.45)';
+  const CLR=['var(--fg-strong)','var(--fg-dim)','var(--fg-muted)'];
+  const ISO=(v:number)=>v===-1?'#e05555':'var(--fg-muted)';
 
   const title=(en:string,ar:string)=>isRTL?ar:en;
 
@@ -239,7 +239,7 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
       </span>)}
     </div>
     <div className="ml-chart-box">
-      <ScatterChart data={d.kmeans.sample} colorFn={v=>CLR[v]||'rgba(255,255,255,.5)'} xLabel="Work Hours" yLabel="Burnout Score"/>
+      <ScatterChart data={d.kmeans.sample} colorFn={v=>CLR[v]||'var(--fg-dim)'} xLabel="Work Hours" yLabel="Burnout Score"/>
     </div>
     <CodeBlock code={CODES.kmeans}/>
   </div>;
@@ -286,8 +286,8 @@ function ModuleContent({mod,isRTL}:{mod:ModuleKey;isRTL:boolean}){
       <Pill label="Threshold" value="5%" sub="contamination"/>
     </div>
     <div className="ml-legend-row">
-      <span className="ml-legend-item"><span style={{background:'rgba(255,70,70,.9)',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Outlier (−1)</span>
-      <span className="ml-legend-item"><span style={{background:'rgba(255,255,255,.45)',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Normal (+1)</span>
+      <span className="ml-legend-item"><span style={{background:'#e05555',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Outlier (−1)</span>
+      <span className="ml-legend-item"><span style={{background:'var(--fg-muted)',width:8,height:8,borderRadius:'50%',display:'inline-block',marginRight:4}}/>Normal (+1)</span>
     </div>
     <div className="ml-chart-box">
       <ScatterChart data={d.isolation_forest.sample} colorFn={ISO} xLabel="Work Hours" yLabel="Burnout Score"/>

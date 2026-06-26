@@ -1,87 +1,103 @@
 /**
- * Theory Page — AI Lab Lectures
+ * TheoryPage — AI Lab Lectures
  * All 9 lab sessions from Dr. Ghada Safi
- * Same visual design as main Neural Pathfinder interface
+ * CSS variables only — fully theme-aware
  */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AI_LECTURES, AILecture, LecKey } from './np-lectures';
 import { Lang, Theme, getSavedLang, getSavedTheme, applyDocumentLang, applyDocumentTheme } from './np-i18n';
 
-/* ── tiny helpers ── */
-function Badge({ text, accent }: { text: string; accent: string }) {
-  const colors: Record<string, string> = {
-    cyan:   'rgba(6,182,212,.2)',
-    purple: 'rgba(139,92,246,.2)',
-    pink:   'rgba(236,72,153,.2)',
-    green:  'rgba(34,197,94,.2)',
-    orange: 'rgba(249,115,22,.2)',
-  };
+/* ── Badge ── */
+function Badge({ text }: { text: string }) {
   return (
     <span style={{
-      padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-      background: colors[accent] || 'rgba(255,255,255,.1)',
-      border: `1px solid ${colors[accent] || 'rgba(255,255,255,.1)'}`,
-      color: 'rgba(255,255,255,.8)', letterSpacing: '0.08em', textTransform: 'uppercase',
+      padding: '2px 8px', borderRadius: 4,
+      fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const,
+      background: 'var(--accent-soft)',
+      border: '1px solid var(--border-strong)',
+      color: 'var(--fg-muted)',
     }}>{text}</span>
   );
 }
 
+/* ── Code snippet ── */
 function CodeSnippet({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
   const copy = () => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1500); };
   return (
-    <div style={{ borderRadius: 8, border: '1px solid rgba(255,255,255,.08)', overflow: 'hidden', marginTop: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 12px', background: 'rgba(255,255,255,.03)', borderBottom: '1px solid rgba(255,255,255,.06)' }}>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,.3)', fontFamily: 'monospace', letterSpacing: '0.1em' }}>python</span>
-        <button onClick={copy} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 10, color: 'rgba(255,255,255,.4)', fontFamily: 'monospace' }}>
+    <div style={{ borderRadius: 6, border: '1px solid var(--border)', overflow: 'hidden', marginTop: 12 }}>
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '5px 12px',
+        background: 'var(--bg-elevated)',
+        borderBottom: '1px solid var(--border)',
+      }}>
+        <span style={{ fontSize: 10, color: 'var(--fg-faint)', fontFamily: 'monospace', letterSpacing: '0.1em' }}>python</span>
+        <button onClick={copy} style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: 10, color: 'var(--fg-dim)', fontFamily: 'monospace',
+        }}>
           {copied ? '✓ copied' : '⧉ copy'}
         </button>
       </div>
-      <pre style={{ margin: 0, padding: '12px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: 'rgba(255,255,255,.7)', lineHeight: 1.7, overflowX: 'auto', background: 'transparent' }}><code>{code}</code></pre>
+      <pre style={{
+        margin: 0, padding: '12px 14px',
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+        color: 'var(--fg-muted)', lineHeight: 1.7, overflowX: 'auto',
+        background: 'var(--bg-panel)',
+      }}><code>{code}</code></pre>
     </div>
   );
 }
 
+/* ── Lecture content ── */
 function LectureView({ lec, isRTL }: { lec: AILecture; isRTL: boolean }) {
-  const t = (s: { en: string; ar: string }) => isRTL ? s.ar : s.en;
+  const tr = (s: { en: string; ar: string }) => isRTL ? s.ar : s.en;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Lecture header */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      {/* Header */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,.3)' }}>
-            {String(lec.number).padStart(2,'0')}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--fg-faint)' }}>
+            {String(lec.number).padStart(2, '0')}
           </span>
-          <Badge text={t(lec.tag)} accent={lec.accent} />
+          <Badge text={tr(lec.tag)} />
           {lec.algoLink && (
-            <Link to={`/?algo=${lec.algoLink}`}
-              style={{ fontSize: 10, color: 'rgba(255,255,255,.45)', textDecoration: 'none', border: '1px solid rgba(255,255,255,.1)', padding: '2px 8px', borderRadius: 4, fontFamily: 'monospace' }}>
+            <Link to={`/?algo=${lec.algoLink}`} style={{
+              fontSize: 10, color: 'var(--fg-dim)', textDecoration: 'none',
+              border: '1px solid var(--border)', padding: '2px 8px',
+              borderRadius: 4, fontFamily: 'monospace',
+              transition: 'color 150ms',
+            }}>
               → {lec.algoLink} Lab ↗
             </Link>
           )}
         </div>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,.92)', lineHeight: 1.3 }}>
-          {t(lec.title)}
+        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--fg-strong)', lineHeight: 1.3 }}>
+          {tr(lec.title)}
         </h2>
-        <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,.5)', lineHeight: 1.6 }}>
-          {t(lec.summary)}
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1.65 }}>
+          {tr(lec.summary)}
         </p>
       </div>
 
       {/* Sections */}
       {lec.sections.map((sec, si) => (
         <div key={si} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,.8)', borderBottom: '1px solid rgba(255,255,255,.06)', paddingBottom: 8 }}>
-            {t(sec.heading)}
+          <h3 style={{
+            margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--fg)',
+            borderBottom: '1px solid var(--border)', paddingBottom: 8,
+          }}>
+            {tr(sec.heading)}
           </h3>
           {sec.paragraphs.map((p, pi) => (
-            <p key={pi} style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,.55)', lineHeight: 1.65 }}>{t(p)}</p>
+            <p key={pi} style={{ margin: 0, fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1.65 }}>{tr(p)}</p>
           ))}
           {sec.bullets && (
             <ul style={{ margin: '4px 0', padding: '0 0 0 18px', display: 'flex', flexDirection: 'column', gap: 4 }}>
               {sec.bullets.map((b, bi) => (
-                <li key={bi} style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', lineHeight: 1.5 }}>{t(b)}</li>
+                <li key={bi} style={{ fontSize: 12, color: 'var(--fg-dim)', lineHeight: 1.5 }}>{tr(b)}</li>
               ))}
             </ul>
           )}
@@ -91,12 +107,16 @@ function LectureView({ lec, isRTL }: { lec: AILecture; isRTL: boolean }) {
 
       {/* Examples */}
       {lec.examples && lec.examples.length > 0 && (
-        <div style={{ padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,.06)', background: 'rgba(255,255,255,.02)' }}>
-          <p style={{ margin: '0 0 8px', fontSize: 11, color: 'rgba(255,255,255,.3)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
+        <div style={{
+          padding: '12px 16px', borderRadius: 6,
+          border: '1px solid var(--border)',
+          background: 'var(--bg-elevated)',
+        }}>
+          <p style={{ margin: '0 0 8px', fontSize: 10, color: 'var(--fg-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
             {isRTL ? 'أمثلة' : 'Examples'}
           </p>
           {lec.examples.map((ex, ei) => (
-            <p key={ei} style={{ margin: '4px 0', fontSize: 12, color: 'rgba(255,255,255,.5)', fontFamily: 'monospace' }}>{t(ex)}</p>
+            <p key={ei} style={{ margin: '4px 0', fontSize: 12, color: 'var(--fg-dim)', fontFamily: 'monospace' }}>{tr(ex)}</p>
           ))}
         </div>
       )}
@@ -104,93 +124,197 @@ function LectureView({ lec, isRTL }: { lec: AILecture; isRTL: boolean }) {
   );
 }
 
+/* ── Main page ── */
 export default function TheoryPage() {
-  const [lang, setLang] = useState<Lang>(() => getSavedLang());
+  const [lang, setLang]   = useState<Lang>(() => getSavedLang());
   const [theme, setTheme] = useState<Theme>(() => getSavedTheme());
   const [active, setActive] = useState<LecKey>('lab1');
-  const isRTL = lang === 'ar';
+  const [sideOpen, setSideOpen] = useState(false);
+  const isRTL   = lang === 'ar';
+  const isLight = theme === 'light';
 
-  useEffect(() => { applyDocumentLang(lang); }, [lang]);
-  useEffect(() => { applyDocumentTheme(theme); }, [theme]);
+  useEffect(() => { applyDocumentLang(lang);  localStorage.setItem('np-lang', lang);  }, [lang]);
+  useEffect(() => { applyDocumentTheme(theme); localStorage.setItem('np-theme', theme); }, [theme]);
+
+  const toggleTheme = () => setTheme(th => th === 'dark' ? 'light' : 'dark');
+  const toggleLang  = () => setLang(l  => l  === 'en'   ? 'ar'   : 'en');
 
   const lec = AI_LECTURES.find(l => l.id === active)!;
-  const t = (s: { en: string; ar: string }) => isRTL ? s.ar : s.en;
+  const tr  = (s: { en: string; ar: string }) => isRTL ? s.ar : s.en;
 
   return (
-    <div className="min-h-screen" style={{ direction: isRTL ? 'rtl' : 'ltr' }}>
-      {/* Header — same as main page */}
-      <header className="sticky top-0 z-50" style={{ background: 'rgba(9,9,9,.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,.06)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 34, height: 34, border: '1.5px solid rgba(255,255,255,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
-              <div style={{ width: 12, height: 12, background: 'rgba(255,255,255,.8)', transform: 'rotate(45deg)' }} />
+    <div dir={isRTL ? 'rtl' : 'ltr'}
+      style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)', fontFamily: 'Inter, sans-serif' }}>
+
+      {/* ── HEADER ── */}
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}>
+        <div style={{
+          maxWidth: 1280, margin: '0 auto',
+          padding: '12px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 12, flexWrap: 'wrap',
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 34, height: 34,
+              border: '1.5px solid var(--accent)',
+              borderRadius: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: 'var(--shadow-glow)',
+            }}>
+              <div style={{ width: 12, height: 12, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
             </div>
             <div>
-              <div style={{ fontSize: 12, letterSpacing: '0.15em', color: 'rgba(255,255,255,.9)', fontWeight: 700, textTransform: 'uppercase' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--fg-strong)', textTransform: 'uppercase' }}>
                 {isRTL ? 'المستكشف العصبي' : 'Neural Pathfinder'}
               </div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,.3)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: 9, color: 'var(--fg-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
                 {isRTL ? 'محاضرات نظرية' : 'Theory Lectures'}
               </div>
             </div>
           </div>
 
-          <nav style={{ display: 'flex', gap: 4, padding: '4px', border: '1px solid rgba(255,255,255,.08)', borderRadius: 12, background: 'rgba(255,255,255,.03)' }}>
-            <Link to="/" style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>
-              {isRTL ? '⟵ المختبر' : 'Lab ↗'}
-            </Link>
-            <span style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.9)', background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)', letterSpacing: '0.04em' }}>
-              {isRTL ? 'المحاضرات' : 'Theory'}
-            </span>
-            <Link to="/ml-lab" style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>
-              ML Lab ↗
-            </Link>
+          {/* Nav */}
+          <nav style={{
+            display: 'flex', gap: 3, padding: '3px',
+            border: '1px solid var(--border)',
+            borderRadius: 8, background: 'var(--bg-panel)',
+          }}>
+            {[
+              { to: '/',        label: isRTL ? 'البحث'     : 'AI Search' },
+              { to: '/ml-lab',  label: isRTL ? 'المختبر'   : 'ML Lab' },
+              { to: '/theory',  label: isRTL ? 'المحاضرات' : 'Theory', active: true },
+            ].map(item => (
+              <Link key={item.to} to={item.to} style={{
+                padding: '5px 14px', borderRadius: 6,
+                fontSize: 11, fontWeight: 600, textDecoration: 'none',
+                letterSpacing: '0.04em',
+                color: item.active ? 'var(--fg-strong)' : 'var(--fg-muted)',
+                background: item.active ? 'var(--bg-elevated)' : 'transparent',
+                border: item.active ? '1px solid var(--border-strong)' : '1px solid transparent',
+                transition: 'all 150ms',
+              }}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button onClick={() => { const t = theme === 'dark' ? 'light' : 'dark'; setTheme(t); applyDocumentTheme(t); window.localStorage.setItem('np-theme', t); }}
-              style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid rgba(255,255,255,.12)', background: 'rgba(255,255,255,.04)', color: 'rgba(255,255,255,.6)', fontSize: 10, cursor: 'pointer', fontFamily: 'monospace' }}>
-              {theme === 'dark' ? '☀ Light' : '☾ Dark'}
+          {/* Controls */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <button onClick={toggleTheme} style={{
+              padding: '6px 12px', borderRadius: 5,
+              border: '1px solid var(--border-strong)',
+              background: 'var(--bg-panel)', color: 'var(--fg-muted)',
+              fontSize: 10, cursor: 'pointer', fontFamily: 'monospace',
+            }}>
+              {isLight ? '☀ Light' : '☾ Dark'}
             </button>
-            <button onClick={() => { const l = lang === 'en' ? 'ar' : 'en'; setLang(l); window.localStorage.setItem('np-lang', l); }}
-              style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid rgba(255,255,255,.12)', background: 'rgba(255,255,255,.04)', color: 'rgba(255,255,255,.6)', fontSize: 10, cursor: 'pointer', fontFamily: 'monospace' }}>
+            <button onClick={toggleLang} style={{
+              padding: '6px 12px', borderRadius: 5,
+              border: '1px solid var(--border-strong)',
+              background: 'var(--bg-panel)', color: 'var(--fg-muted)',
+              fontSize: 10, cursor: 'pointer', fontFamily: 'monospace',
+            }}>
               {lang === 'en' ? 'العربية' : 'English'}
+            </button>
+            {/* Mobile lecture list toggle */}
+            <button onClick={() => setSideOpen(o => !o)} style={{
+              display: 'none',
+              padding: '6px 10px', borderRadius: 5,
+              border: '1px solid var(--border-strong)',
+              background: sideOpen ? 'var(--accent-soft)' : 'var(--bg-panel)',
+              color: 'var(--fg-muted)',
+              fontSize: 13, cursor: 'pointer',
+            }} className="theory-mobile-toggle">
+              {sideOpen ? '✕' : '☰'}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 20px', display: 'grid', gridTemplateColumns: '240px 1fr', gap: 24 }}>
-        {/* Lecture list sidebar */}
-        <aside style={{ position: 'sticky', top: 80, height: 'fit-content', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <p style={{ margin: '0 0 10px', fontSize: 9, color: 'rgba(255,255,255,.25)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
+      {/* ── BODY ── */}
+      <div style={{
+        maxWidth: 1280, margin: '0 auto',
+        padding: '28px 20px',
+        display: 'grid', gridTemplateColumns: '220px 1fr',
+        gap: 24,
+      }} className="theory-grid">
+
+        {/* ── Lecture list sidebar ── */}
+        <aside style={{
+          position: 'sticky', top: 72,
+          height: 'fit-content',
+          display: 'flex', flexDirection: 'column', gap: 3,
+        }} className={`theory-sidebar${sideOpen ? ' theory-sidebar--open' : ''}`}>
+          <p style={{
+            margin: '0 0 10px', fontSize: 9,
+            color: 'var(--fg-faint)', letterSpacing: '0.12em',
+            textTransform: 'uppercase', fontFamily: 'monospace',
+          }}>
             {isRTL ? 'المحاضرات' : 'Lectures'}
           </p>
           {AI_LECTURES.map(l => (
             <button key={l.id}
-              onClick={() => setActive(l.id)}
+              onClick={() => { setActive(l.id); setSideOpen(false); }}
               style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', textAlign: isRTL ? 'right' : 'left',
-                background: active === l.id ? 'rgba(255,255,255,.08)' : 'transparent',
-                borderLeft: active === l.id && !isRTL ? '2px solid rgba(255,255,255,.5)' : '2px solid transparent',
-                borderRight: active === l.id && isRTL ? '2px solid rgba(255,255,255,.5)' : '2px solid transparent',
-                transition: 'all .15s',
-              }}>
-              <span style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,.3)', minWidth: 16 }}>{String(l.number).padStart(2,'0')}</span>
-              <span style={{ fontSize: 11, fontWeight: 500, color: active === l.id ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)', lineHeight: 1.3 }}>
-                {t(l.title)}
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '9px 12px', borderRadius: 5, cursor: 'pointer',
+                textAlign: isRTL ? 'right' : 'left', width: '100%',
+                background: active === l.id ? 'var(--accent-soft)' : 'transparent',
+                border: '1px solid ' + (active === l.id ? 'var(--border-accent)' : 'transparent'),
+                borderInlineStart: active === l.id ? '2.5px solid var(--accent)' : '1px solid transparent',
+                color: active === l.id ? 'var(--fg-strong)' : 'var(--fg-muted)',
+                transition: 'all 160ms',
+              }}
+            >
+              <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'var(--fg-faint)', paddingTop: 2, minWidth: 18, flexShrink: 0 }}>
+                {String(l.number).padStart(2, '0')}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: active === l.id ? 700 : 500, lineHeight: 1.4 }}>
+                {tr(l.title)}
               </span>
             </button>
           ))}
         </aside>
 
-        {/* Lecture content */}
-        <div style={{ border: '1px solid rgba(255,255,255,.07)', borderRadius: 12, padding: '28px 32px', background: 'rgba(255,255,255,.02)' }}>
-          <LectureView lec={lec} isRTL={isRTL} />
-        </div>
-      </main>
+        {/* ── Lecture content ── */}
+        <article style={{
+          background: 'var(--bg-panel)',
+          border: '1px solid var(--border)',
+          borderRadius: 8, padding: '28px 30px',
+          minHeight: 500,
+        }}>
+          <LectureView key={active} lec={lec} isRTL={isRTL} />
+        </article>
+      </div>
+
+      {/* Responsive */}
+      <style>{`
+        @media (max-width: 768px) {
+          .theory-grid { grid-template-columns: 1fr !important; }
+          .theory-sidebar {
+            position: static !important;
+            display: none !important;
+          }
+          .theory-sidebar.theory-sidebar--open {
+            display: flex !important;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            max-height: 280px;
+            overflow-y: auto;
+          }
+          .theory-mobile-toggle { display: block !important; }
+        }
+      `}</style>
     </div>
   );
 }
