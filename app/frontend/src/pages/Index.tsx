@@ -49,6 +49,7 @@ export default function Index() {
 
   const toggleLang = () => setLang((l) => (l === 'en' ? 'ar' : 'en'));
   const toggleTheme = () => setTheme((th) => (th === 'dark' ? 'light' : 'dark'));
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   /* ---------- Algorithm state ---------- */
   const [algo, setAlgo] = useState<AlgoKey>('BFS');
@@ -285,8 +286,38 @@ export default function Index() {
   return (
     <div className="np-dot-grid" dir={isRTL ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)' }}>
       <div className="np-shell" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', minHeight: '100vh' }}>
+
+      {/* Mobile nav toggle */}
+      <div className="np-mobile-header" style={{
+        display: 'none',
+        position: 'sticky', top: 0, zIndex: 50,
+        padding: '10px 16px',
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
+        alignItems: 'center', justifyContent: 'space-between',
+      }}
+        // show on mobile via CSS class
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 26, height: 26, border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 3 }}>
+            <div style={{ width: 9, height: 9, background: 'var(--accent)', transform: 'rotate(45deg)' }} />
+          </div>
+          <span className="np-sans" style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'var(--fg-strong)', textTransform: 'uppercase' }}>{t.brand}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={toggleTheme} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: 'var(--bg-panel)', color: 'var(--fg)', fontSize: 10, cursor: 'pointer', borderRadius: 3 }}>
+            {isLight ? '☀' : '☾'}
+          </button>
+          <button onClick={toggleLang} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: 'var(--bg-panel)', color: 'var(--fg)', fontSize: 10, cursor: 'pointer', borderRadius: 3 }}>
+            {lang === 'en' ? 'ع' : 'EN'}
+          </button>
+          <button onClick={() => setSidebarOpen(o => !o)} className="np-sans" style={{ padding: '6px 10px', border: '1px solid var(--border-strong)', background: sidebarOpen ? 'var(--accent-soft)' : 'var(--bg-panel)', color: 'var(--fg)', fontSize: 12, cursor: 'pointer', borderRadius: 3 }}>
+            {sidebarOpen ? '✕' : '☰'}
+          </button>
+        </div>
+      </div>
         {/* ========== SIDEBAR ========== */}
-        <aside className="np-sidebar np-scroll" style={{
+        <aside className={`np-sidebar np-scroll${sidebarOpen ? " np-sidebar--open" : ""}`} style={{
           borderInlineEnd: '1px solid var(--border)',
           background: 'var(--bg-panel)',
           padding: '22px 20px',
@@ -304,7 +335,7 @@ export default function Index() {
           </div>
 
           {/* Author card */}
-          <div className="np-glass" style={{ padding: 12, borderRadius: 4, marginBottom: 18 }}>
+          <div className="np-glass np-sidebar-author" style={{ padding: 12, borderRadius: 4, marginBottom: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 36, height: 36, borderRadius: '50%',
@@ -329,7 +360,7 @@ export default function Index() {
 
 
           {/* ML Lab nav */}
-          <div style={{ marginBottom: 14 }}>
+          <div className="np-sidebar-nav-links" style={{ marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Link
               to="/ml-lab"
               className="np-sans"
@@ -366,7 +397,7 @@ export default function Index() {
           </div>
 
           {/* Theme + Lang toggles */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 20 }}>
+          <div className='np-sidebar-toggles' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 20 }}>
             <button
               onClick={toggleTheme}
               className="np-sans"
@@ -399,7 +430,7 @@ export default function Index() {
 
           {/* Nav */}
           <SidebarLabel text={t.algorithms} />
-          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <div className="np-sidebar-algo-grid" style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 5 }}>
             {ALGOS.map((a) => {
               const active = a.key === algo;
               return (
@@ -426,12 +457,13 @@ export default function Index() {
           </div>
 
           <div style={{ height: 20 }} />
-          <SidebarLabel text={t.liveStats} />
+          <div className='np-sidebar-stats'><SidebarLabel text={t.liveStats} />
           <div style={{ marginTop: 8 }}>
             <MiniStatRow label={t.statAlgorithm} value={algo} highlight />
             <MiniStatRow label={t.statExplored} value={`${sidebarStats.explored}/${sidebarStats.total}`} />
             <MiniStatRow label={t.statPath} value={String(sidebarStats.pathLen)} />
             <MiniStatRow label={t.statStatus} value={statusText} />
+          </div>
           </div>
 
           <div style={{ height: 20 }} />
