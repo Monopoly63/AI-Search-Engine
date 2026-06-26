@@ -357,7 +357,22 @@ export default function Index() {
       </header>
 
       <div className="premium-shell">
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', transition: 'all 280ms' }}
+          />
+        )}
         <aside className={`command-rail glass-card${sidebarOpen ? ' is-open' : ''}`} aria-label={isRTL ? 'مساحة التحكم' : 'Command rail'}>
+          <div style={{ display: 'none', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16, borderBottom: '1px solid var(--border)', marginBottom: 8, width: '100%' }} className="mobile-drawer-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span className="brand-mark" style={{ width: 30, height: 30 }}><BrainCircuit size={16} /></span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--fg-strong)', letterSpacing: 0.5 }}>{t.brand}</span>
+            </div>
+            <button type="button" onClick={() => setSidebarOpen(false)} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '6px 8px', color: 'var(--fg-strong)', cursor: 'pointer' }}>
+              <X size={16} />
+            </button>
+          </div>
           <div className="brand-lockup desktop-only">
             <span className="brand-mark"><BrainCircuit aria-hidden="true" /></span>
             <span style={{ minWidth: 0 }}>

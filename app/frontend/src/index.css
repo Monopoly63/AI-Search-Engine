@@ -1659,6 +1659,7 @@ input[type="range"].np-range::-moz-range-thumb {
     transform: translateX(105%);
   }
   .command-rail.is-open { transform: translateX(0) !important; }
+  .mobile-drawer-header { display: flex !important; }
   .rail-scroll { overflow-y: visible !important; height: auto !important; flex: none !important; }
   .premium-main { margin-top: 10px; }
   .topbar-nav { order: 3; width: 100%; justify-content: center; overflow-x: auto; }
