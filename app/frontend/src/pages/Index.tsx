@@ -330,8 +330,8 @@ export default function Index() {
 
           {/* ML Lab nav */}
           <div style={{ marginBottom: 14 }}>
-            <RouterLink
-to="/ml-lab"
+            <Link
+              to="/ml-lab"
               className="np-sans"
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -346,8 +346,8 @@ to="/ml-lab"
               <span style={{ color: 'var(--accent)' }}>⚗</span>
               <span>{lang === 'ar' ? 'مختبر ML' : 'ML Lab'}</span>
               <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
-            </RouterLink>
-            <RouterLink
+            </Link>
+            <Link
               to="/theory"
               className="np-sans"
               style={{
@@ -362,7 +362,7 @@ to="/ml-lab"
               <span style={{ color: 'var(--accent)' }}>📖</span>
               <span>{lang === 'ar' ? 'المحاضرات' : 'Theory'}</span>
               <span style={{ marginLeft: 'auto', fontSize: 9, opacity: .5 }}>⟶</span>
-            </RouterLink>
+            </Link>
           </div>
 
           {/* Theme + Lang toggles */}
